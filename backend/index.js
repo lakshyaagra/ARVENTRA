@@ -1,10 +1,15 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 app.use(express.json());
 
-const dashboardRouter=require('./routes/dashboard');
-const loansRouter=require('./routes/loans');
+// const dashboardRouter=require('./routes/dashboard');
+// const loansRouter=require('./routes/loans');
+const connectDB=require('./config/db');
+const goalsRouter=require('./routes/goals');
 
+app.use("/goals", goalsRouter);
 // app.use((req,res,next)=>{
 
 //     console.log(`${req.method} request for ${req.url}`);
@@ -28,20 +33,9 @@ const loansRouter=require('./routes/loans');
 //     next();
 // })
 
-app.post('/goals',(req,res)=>{
-    console.log(req.body);
-    // res.send("Goal created successfully");
-    // res.send(req.body);
-    const goal=req.body;
-    console.log(goal.goalName);
-    // res.send(`Goal "${goal.goalName}" created successfully`);
-    res.send({
-        message: "Goal Created",
-        goal: goal.goalName
-    });
-    
-});
-app.use("/dashboard",dashboardRouter);
+// app.post('/goals',validateGoal,createGoal);
+
+
 // app.use("/loans",loansRouter);
 
 // part of index.js file
