@@ -3,6 +3,7 @@ const Goal = require('../models/Goal');
 const createGoal = async (req, res) => {
     try{
         // req.body.targetAmount = Number(req.body.targetAmount);
+        req.body.user=req.user.id;  //user id is coming from auth middleware
         const goal = await Goal.create(req.body);
         res.status(201).json({
             message: "Goal Created",
@@ -19,7 +20,10 @@ const createGoal = async (req, res) => {
 }
 const getGoals = async (req, res) => {
     try{
-        const goals=await Goal.find();   //Goal is a Model which is used to fetch data from MongoDB database
+        // const goals=await Goal.find();   //Goal is a Model which is used to fetch data from MongoDB database
+        const goals=await Goal.find(
+            { user: req.user.id }
+        );
         res.status(200).json({
             message:" Goals Retrieved ",
             success:true,
@@ -38,7 +42,10 @@ const getGoalById=async (req, res)=>{
     // const goal=goals.find(goal=>goal.id===id)
     try{
         const id=req.params.id;  //as mongoDB generates id alphanumeric , converting to number will give NaN
-        const goal=await Goal.findById(id);
+        const goal=await Goal.findOne({
+            _id: id,
+            user: req.user.id
+        });
         if(!goal){    //agr id meri document me nahi hai to null return karega
             return res.status(404).json({
                 error: "Goal not found",
@@ -65,14 +72,25 @@ const updateGoalById=async (req,res)=>{
     // const goal=goals.find(goal=>goal.id===id)
     try{
         const id=req.params.id;
-        const goal=await Goal.findByIdAndUpdate(
-            id, 
-            req.body, 
-            { new: true }
+        // const goal=await Goal.findByIdAndUpdate(
+        //     id, 
+        //     req.body, 
+        //     { new: true }
+        // );
+        const goal=await Goal.findOneAndUpdate(
+            {
+                _id: id,
+                user: req.user.id
+            }, 
+            req.body,
+            { 
+                new: true,
+                runValidators: true
+            }
         );
         if(!goal){
             return res.status(404).json({
-                error: "Goal not found",
+                message: "Goal not found",
                 success: false
             })
         }
@@ -92,14 +110,20 @@ const updateGoalById=async (req,res)=>{
 }
 const deleteGoalById=async (req,res)=>{
     try{
+        // const id=req.params.id;
+        // const goal=await Goal.findByIdAndDelete(id);
         const id=req.params.id;
-        const goal=await Goal.findByIdAndDelete(id);
+        const goal=await Goal.findOne({
+            _id: id,
+            user: req.user.id
+        });
         if(!goal){
             return res.status(404).json({
-                error: "Goal not found",
+                message: "Goal not found",
                 success: false
             })
         }
+        await goal.deleteOne()
         res.status(200).json({
             message: "Goal Deleted",
             success: true,
