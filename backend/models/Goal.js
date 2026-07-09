@@ -15,6 +15,11 @@ const goalSchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'completed'],
         default: 'active'
+    },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 const Goal = mongoose.model('Goal', goalSchema);
