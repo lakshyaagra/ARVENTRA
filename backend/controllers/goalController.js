@@ -1,9 +1,26 @@
 // const goals=[];
 const Goal = require('../models/Goal');
+const cloudinary=require('../config/cloudinary')
+const fs=require('fs');
+const { log } = require('console');
+
 const createGoal = async (req, res) => {
+    let uploadedGoalImage;
     try{
-        // req.body.targetAmount = Number(req.body.targetAmount);
         req.body.user=req.user.id;  //user id is coming from auth middleware
+        if(req.file){
+            uploadedGoalImage=await cloudinary.uploader.upload(req.file.path);
+            req.body.image=uploadedGoalImage.secure_url;
+            req.body.publicId=uploadedGoalImage.public_id;
+            try{
+                fs.unlinkSync(req.file.path)
+            }
+            catch(err){
+                console.log("Temporary file can't be deleted",err.message);
+            }
+
+        }
+        // req.body.targetAmount = Number(req.body.targetAmount);
         const goal = await Goal.create(req.body);
         res.status(201).json({
             message: "Goal Created",
@@ -12,6 +29,16 @@ const createGoal = async (req, res) => {
         });
     }
     catch(error){
+        try{
+            if(uploadedGoalImage){
+                await cloudinary.uploader.destroy(
+                    uploadedGoalImage.public_id
+                )
+            }
+        }
+        catch(err){
+            console.log("Cloudinary RollBack Error: ",err.message);
+        }
         res.status(500).json({
             message: error.message,
             success: false,
@@ -126,8 +153,7 @@ const getGoalById=async (req, res)=>{
     }
 }
 const updateGoalById=async (req,res)=>{
-    // const id=Number(req.params.id);
-    // const goal=goals.find(goal=>goal.id===id)
+    let uploadedGoalImage;
     try{
         const id=req.params.id;
         // const goal=await Goal.findByIdAndUpdate(
@@ -135,24 +161,48 @@ const updateGoalById=async (req,res)=>{
         //     req.body, 
         //     { new: true }
         // );
-        const goal=await Goal.findOneAndUpdate(
-            {
-                _id: id,
-                user: req.user.id
-            }, 
-            req.body,
-            { 
-                new: true,
-                runValidators: true
-            }
-        );
+        const goal=await Goal.findOne({
+            _id: id,   //current goal id
+            user: req.user.id
+        });
         if(!goal){
             return res.status(404).json({
                 message: "Goal not found",
                 success: false
             })
         }
-        // Object.assign(goal,req.body);
+        const oldPublicId=goal.publicId;
+        if(req.file){
+            uploadedGoalImage=await cloudinary.uploader.upload(req.file.path);
+            req.body.image=uploadedGoalImage.secure_url;
+            req.body.publicId=uploadedGoalImage.public_id;
+            try{
+                fs.unlinkSync(req.file.path)
+            }
+            catch(err){
+                console.log("Temporary file can't be deleted",err.message);
+            }
+            //nyi file upload ho gyi
+        }
+        const updatedTargetAmount=req.body.targetAmount!==undefined?Number(req.body.targetAmount):goal.targetAmount;
+        const updatedCurrentAmount=req.body.currentAmount!==undefined?Number(req.body.currentAmount):goal.currentAmount;
+        if(updatedCurrentAmount>updatedTargetAmount){
+            return res.status(400).json({
+                success:false,
+                message: "Current amount cannot exceed target amount."
+            })
+        }
+
+        Object.assign(goal,req.body);
+        await goal.save();
+        if(req.file && oldPublicId){  //check ki purani image h ya nhi :- agr h to delete kro from perm. storage
+            try{
+                await cloudinary.uploader.destroy(oldPublicId);
+            }
+            catch(err){
+                console.log("Old file can't be deleted",err.message);
+            }
+        }
         res.status(200).json({
             message: "Goal Updated",
             success: true,
@@ -160,6 +210,16 @@ const updateGoalById=async (req,res)=>{
         })
     }
     catch(err){
+        try{
+            if(uploadedGoalImage){
+                await cloudinary.uploader.destroy(
+                    uploadedGoalImage.public_id
+                )
+            }
+        }
+        catch(err){
+            console.log("Cloudinary RollBack Error: ",err.message);
+        }
         res.status(500).json({
             message: err.message,
             success: false
@@ -180,6 +240,14 @@ const deleteGoalById=async (req,res)=>{
                 message: "Goal not found",
                 success: false
             })
+        }
+        if(goal.publicId){
+            try{
+                await cloudinary.uploader.destroy(goal.publicId)
+            }
+            catch(err){
+                console.log("Cloudinary image could not be deleted: ",err.message);
+            }
         }
         await goal.deleteOne()
         res.status(200).json({

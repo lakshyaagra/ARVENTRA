@@ -7,7 +7,7 @@ const registerUser=async (req,res)=>{
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         req.body.password = hashedPassword;
         const user = await User.create(req.body);
-        user.password = undefined; //password ko response me nahi bhejna chahte , isliye undefined kar diya
+        // user.password = undefined; //password ko response me nahi bhejna chahte , isliye undefined kar diya
         res.status(201).json({
             message: "User Registered",
             success: true,
@@ -26,7 +26,7 @@ const loginUser=async (req,res)=>{
     try{
         const user=await User.findOne({
             email:req.body.email
-        })
+        }).select('+password')  //password ko retrieve karne ke liye select('+password') use kiya gaya hai
         if(!user){
             return res.status(401).json({
                 message: "Invalid Email or Password",
@@ -62,4 +62,5 @@ const loginUser=async (req,res)=>{
         })
     }
 }
+
 module.exports={registerUser, loginUser}
