@@ -8,7 +8,7 @@ const upload=require('../config/multer')
 
 router.post('/',authMiddleware,
     upload.single('goalImage') 
-    ,validateUpdateGoal, createGoal
+    ,validateGoal, createGoal
 );
 
 router.get('/',authMiddleware,getGoals); 

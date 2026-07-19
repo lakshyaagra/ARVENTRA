@@ -1,13 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const validateLoan = require("../middleware/validateLoan");
+const validateUpdateLoan= require('../middleware/validateUpdateLoan')
+const { createLoan,getLoans,getLoanById,updateLoanById, deleteLoanById } = require("../controllers/loanController");
+const authMiddleware = require('../middleware/authMiddleware');
 
-
-router.get("/history", (req, res) => {
-    res.send("Loan History");
-});
-
-router.get("/:loanId", (req, res) => {
-    res.send(`Loan ID: ${req.params.loanId}`);
-});
+router.post('/',authMiddleware,validateUpdateLoan, createLoan);
+router.get('/',authMiddleware,getLoans); 
+router.get('/:id',authMiddleware, getLoanById);
+router.put('/:id', authMiddleware,validateUpdateLoan, updateLoanById);
+router.delete('/:id',authMiddleware, deleteLoanById);
 
 module.exports = router;

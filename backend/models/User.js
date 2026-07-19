@@ -15,6 +15,7 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true,
+        select:false,  //password ko response me nahi bhejna chahte , isliye select:false kar diya
         minLength:7,
     }
 })
