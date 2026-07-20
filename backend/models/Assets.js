@@ -43,6 +43,9 @@ const assetSchema=new mongoose.Schema({
         ref: 'User',
         required: true
     }
+},
+{
+    timestamps:true
 })
 
 const Assets=mongoose.model('Assets', assetSchema);

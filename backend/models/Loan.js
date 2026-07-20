@@ -63,6 +63,9 @@ const loanSchema=new mongoose.Schema({
         ref: 'User',
         required: true
     }
+},
+{
+    timestamps:true
 })
 const Loan=mongoose.model('Loan', loanSchema);
 module.exports=Loan;
