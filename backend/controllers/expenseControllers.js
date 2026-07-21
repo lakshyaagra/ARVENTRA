@@ -1,13 +1,13 @@
 const Expense=require('../models/Expense')
 
-const createExpense=(req,res)=>{
+const createExpense=async (req,res)=>{
     try{
         req.body.user=req.user.id;
         const expense=await Expense.create(req.body);
         res.status(201).json({
             message: "Expense Created",
             success: true,
-            asset
+            expense
         });
     }
     catch(err){
@@ -56,7 +56,7 @@ const getExpenses=async (req,res)=>{
         //searching
         const search=req.query.search?.trim()
         if(search){
-            filter.assetName={
+            filter.expenseName={
                 $regex:search,
                 $options:"i"
             }
