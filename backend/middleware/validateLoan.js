@@ -77,6 +77,7 @@ const validateLoan=(req,res,next)=>{
             message: "Notes can't be empty."
         })
     }
+    
     next();
 }
 module.exports=validateLoan;
