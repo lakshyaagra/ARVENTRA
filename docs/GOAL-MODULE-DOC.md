@@ -254,9 +254,3 @@ Business Rule is verified inside the controller using the existing database valu
 * Cloudinary
 
 ---
-
-# Module Status
-
-**Status:** Completed
-
-This module has been fully implemented, validated, tested, and is considered feature-complete for Project Udaan Phase 1.
