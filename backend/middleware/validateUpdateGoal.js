@@ -44,7 +44,7 @@ const validateUpdateGoal= (req,res,next)=>{
         })
     }
     if(description!==undefined){
-        if(typeof description!=="string" || description.trim()==""){
+        if(typeof description!=="string" || description.trim()===""){
             return res.status(400).json({
                 success:false,
                 message: "Description can't be empty."
