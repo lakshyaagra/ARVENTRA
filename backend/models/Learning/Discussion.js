@@ -1,0 +1,54 @@
+const mongoose = require("mongoose");
+const discussionSchema = new mongoose.Schema(
+{
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true
+    },
+    type:{
+        type:String,
+        enum:["blog","question"],
+        required:true
+    },
+    title:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    content:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    category:{
+        type:String,
+        enum:["budgeting","saving","investment","mutual-funds","stocks","insurance",
+                "loan","tax","credit-score","retirement","financial-planning","other"],
+        default:"other"
+    },
+    tags:[
+        String
+    ],
+    views:{
+        type:Number,
+        default:0
+    },
+    likesCount:{
+        type:Number,
+        default:0
+    },
+    commentsCount:{
+        type:Number,
+        default:0
+    },
+    isEdited:{
+        type:Boolean,
+        default:false
+    }
+},
+{
+    timestamps:true
+});
+
+module.exports=mongoose.model("Discussion",discussionSchema);
