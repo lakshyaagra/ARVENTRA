@@ -11,15 +11,15 @@ const {createComment,getComments,updateCommentById,deleteCommentById}=
                         require("../controllers/commentController");
 
 // Create Comment
-router.post("/:id/comments",auth,validateComment,createComment);
+router.post("/:id/comments",authMiddleware,validateComment,createComment);
 
 // Get Comments
-router.get("/:id/comments",auth,getComments);
+router.get("/:id/comments",authMiddleware,getComments);
 
 // Update Comment
-router.patch("/comments/:id",auth,validateUpdateComment,updateCommentById);
+router.patch("/comments/:id",authMiddleware,validateUpdateComment,updateCommentById);
 
 // Delete Comment
-router.delete("/comments/:id",auth,deleteCommentById);
+router.delete("/comments/:id",authMiddleware,deleteCommentById);
 
 module.exports = router;
