@@ -1,4 +1,4 @@
-const Discussion = require("../models/Discussion");
+const Discussion = require("../models/Learning/Discussion");
 const Like = require("../models/Learning/Like");
 
 const toggleLike = async (req, res) => {

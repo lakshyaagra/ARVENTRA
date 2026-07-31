@@ -323,6 +323,43 @@ const getMonthlyExpenseReport = async (req, res) => {
         });
     }
 };
+const getGoalStatusReport = async (req, res) => {
+    try {
+        const report = await Goal.aggregate([
+            {
+                $match: {
+                    user: req.user.id
+                }
+            },
+            {
+                $group: {
+                    _id: "$status",
+                    totalLoans: {
+                        $sum: 1
+                    },
+                    totalTargetAmount: {
+                        $sum: "$targetAmount"
+                    }
+                }
+            },
+            {
+                $sort: {
+                    _id: 1
+                }
+            }
+        ]);
+        res.status(200).json({
+            success: true,
+            message: "Goal status report generated successfully.",
+            report
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
 const getLoanStatusReport = async (req, res) => {
     try {
         const report = await Loan.aggregate([
@@ -361,4 +398,4 @@ const getLoanStatusReport = async (req, res) => {
     }
 };
 module.exports = { getSummaryReport,getIncomeCategoryReport,getExpenseCategoryReport,
-                   getMonthlyIncomeReport,getMonthlyExpenseReport,getLoanStatusReport };
+                   getMonthlyIncomeReport,getMonthlyExpenseReport,getLoanStatusReport,getGoalStatusReport };

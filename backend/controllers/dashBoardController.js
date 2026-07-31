@@ -157,7 +157,6 @@ const getDashboard = async (req, res) =>{
                 recentGoals
             }
         });
-
     }
     catch(err){
         res.status(500).json({

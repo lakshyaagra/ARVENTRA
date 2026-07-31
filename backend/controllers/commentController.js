@@ -1,4 +1,4 @@
-const Discussion = require("../models/Discussion");
+const Discussion = require("../models/Learning/Discussion");
 const Comment = require("../models/Learning/Comment");
 
 const createComment = async (req, res) => {
