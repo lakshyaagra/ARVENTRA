@@ -30,10 +30,6 @@ const discussionSchema = new mongoose.Schema(
     tags:[
         String
     ],
-    views:{
-        type:Number,
-        default:0
-    },
     likesCount:{
         type:Number,
         default:0

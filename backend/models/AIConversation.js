@@ -28,7 +28,11 @@ const aiConversationSchema = new mongoose.Schema({
         type: String,
         default: "New Conversation"
     },
-    messages: [messageSchema]
+    messages: [messageSchema],
+    summary: {
+        type: String,
+        default: ""
+    },
 },{
     timestamps: true
 });
