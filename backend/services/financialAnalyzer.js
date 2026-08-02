@@ -19,14 +19,16 @@ const financialAnalyzer=({income=[],expenses=[],goals=[],loans=[],assets=[]})=>{
     );
     const goalProgress=totalGoalAmount===0?0:(totalCurrentGoalAmount/totalGoalAmount)*100;
     const totalLoanAmount=loans.reduce(
-        (sum,item)=>sum + item.remainingAmount,
+        (sum,item)=>sum + item.outstandingAmount,
         0
     );
     const totalAssetValue=assets.reduce(
         (sum,item)=>sum + item.currentValue,
         0
     );
-    const activeLoanCount=loans.length;
+    const activeLoanCount=loans.filter(
+        loan => loan.status === "active"
+    ).length;
 
     let financialHealth = 0;
     // Savings Rate
