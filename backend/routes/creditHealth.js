@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
-const { getCreditHealth } = require("../controllers/creditHealthController");
+const { creditHealthSummary } = require("../controllers/creditHealthController");
 
-router.get("/", authMiddleware, getCreditHealth);
+router.get("/", authMiddleware, creditHealthSummary);
 
 module.exports = router;

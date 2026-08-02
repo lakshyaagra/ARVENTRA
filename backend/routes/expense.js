@@ -5,7 +5,7 @@ const validateUpdateExpense = require('../middleware/validateUpdateExpense')
 const { createExpense,getExpenses,getExpenseById,updateExpenseById,deleteExpenseById } = require("../controllers/expenseControllers");
 const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/',authMiddleware,validateUpdateExpense, createExpense);
+router.post('/',authMiddleware,validateExpense, createExpense);
 router.get('/',authMiddleware,getExpenses); 
 router.get('/:id',authMiddleware, getExpenseById);
 router.put('/:id', authMiddleware,validateUpdateExpense, updateExpenseById);

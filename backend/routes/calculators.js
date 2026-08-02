@@ -4,7 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const { simpleInterestCalculator,compoundInterestCalculator,roiCalculator
     ,fdCalculator,rdCalculator,sipCalculator,lumpsumCalculator,
-    emiCalculator,incomeTaxCalculator
+    emiCalculator,incomeTaxCalculator,retirementCalculator
  } = require("../controllers/calculatorsController");
 
 router.get("/simple-interest", authMiddleware, simpleInterestCalculator);
@@ -19,6 +19,6 @@ router.get("/home-loan-emi", authMiddleware, emiCalculator);
 router.get("/car-loan-emi", authMiddleware, emiCalculator);
 router.get("/education-loan-emi", authMiddleware, emiCalculator);
 router.get("/income-tax", authMiddleware, incomeTaxCalculator);
-
+router.get("/retirement", authMiddleware, retirementCalculator);
 
 module.exports = router;
