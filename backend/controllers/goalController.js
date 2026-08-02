@@ -1,7 +1,7 @@
 // const goals=[];
 const Goal = require('../models/Goal');
 const cloudinary=require('../config/cloudinary')
-const fs=require('fs');
+const fs=require('fs/promises');
 const { log } = require('console');
 
 const createGoal = async (req, res) => {
@@ -12,13 +12,6 @@ const createGoal = async (req, res) => {
             uploadedGoalImage=await cloudinary.uploader.upload(req.file.path);
             req.body.image=uploadedGoalImage.secure_url;
             req.body.publicId=uploadedGoalImage.public_id;
-            try{
-                fs.unlinkSync(req.file.path)
-            }
-            catch(err){
-                console.log("Temporary file can't be deleted",err.message);
-            }
-
         }
         // req.body.targetAmount = Number(req.body.targetAmount);
         const goal = await Goal.create(req.body);
@@ -29,20 +22,29 @@ const createGoal = async (req, res) => {
         });
     }
     catch(error){
-        try{
-            if(uploadedGoalImage){
-                await cloudinary.uploader.destroy(
-                    uploadedGoalImage.public_id
-                )
+        if (uploadedGoalImage) {
+            try {
+                await cloudinary.uploader.destroy(uploadedGoalImage.public_id);
+            } catch (err) {
+                console.log("Cloudinary rollback error:", err.message);
             }
         }
-        catch(err){
-            console.log("Cloudinary RollBack Error: ",err.message);
-        }
+
         res.status(500).json({
-            message: error.message,
             success: false,
-        })
+            message: error.message
+        });
+    }
+    //remove temporary file if it exists
+    finally {
+        if (req.file) {
+            try {
+                await fs.unlink(req.file.path);
+                console.log("Temporary file deleted.");
+            } catch (err) {
+                console.log("Couldn't delete temporary file:", err.message);
+            }
+        }
     }
 }
 const getGoals = async (req, res) => {
