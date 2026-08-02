@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const Goal=require('../models/Goal')
 const Loan = require("../models/Loan");
 const Asset = require("../models/Assets");
@@ -6,7 +8,7 @@ const Income = require("../models/Income");
 
 const getDashboard = async (req, res) =>{
     try {
-
+        const userId=new mongoose.Types.ObjectId(req.user.id);
         const totalGoals = await Goal.countDocuments({ user: req.user.id });
         const totalLoans = await Loan.countDocuments({ user: req.user.id });
         const totalExpenseCount = await Expense.countDocuments({ user: req.user.id });
@@ -15,7 +17,7 @@ const getDashboard = async (req, res) =>{
         const assetResult=await Asset.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },
             {
@@ -31,7 +33,7 @@ const getDashboard = async (req, res) =>{
         const incomeResult=await Income.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },
             {
@@ -47,7 +49,7 @@ const getDashboard = async (req, res) =>{
         const expenseResult=await Expense.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },
             {
@@ -63,7 +65,7 @@ const getDashboard = async (req, res) =>{
         const loanResult=await Loan.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },
             {
@@ -80,7 +82,7 @@ const getDashboard = async (req, res) =>{
         const loanStatus=await Loan.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },{
                 $group:{
@@ -97,7 +99,7 @@ const getDashboard = async (req, res) =>{
         const goalStatus=await Goal.aggregate([
             {
                 $match:{
-                    user:req.user.id
+                    user:userId
                 }
             },{
                 $group:{
@@ -112,16 +114,16 @@ const getDashboard = async (req, res) =>{
         const completedGoals=goalStatus.find(item => item._id === "completed")?.count || 0;
 
         const recentExpenses=await Expense.find({
-            user:req.user.id
+            user:userId
         }).sort({createdAt:-1}).limit(5).populate("user","name email");
         const recentLoans=await Loan.find({
-            user:req.user.id
+            user:userId
         }).sort({createdAt:-1}).limit(5).populate("user","name email");
         const recentIncome=await Income.find({
-            user:req.user.id
+            user:userId
         }).sort({createdAt:-1}).limit(5).populate("user","name email");
         const recentGoals=await Goal.find({
-            user:req.user.id
+            user:userId
         }).sort({createdAt:-1}).limit(5).populate("user","name email");
 
         const netWorth=totalAssets-totalOutstandingLoans;

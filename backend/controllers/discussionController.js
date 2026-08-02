@@ -1,4 +1,6 @@
 const Discussion = require("../models/Learning/Discussion");
+const Comment = require("../models/Learning/Comment");
+const Like = require("../models/Learning/Like");
 
 const createDiscussion = async (req, res)=>{
     try{

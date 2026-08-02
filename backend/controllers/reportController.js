@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const Goal = require("../models/Goal");
 const Loan = require("../models/Loan");
 const Asset = require("../models/Assets");
@@ -26,10 +28,11 @@ const getSummaryReport = async (req, res) => {
                 ]
             };
         }
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const incomeResult=await Income.aggregate([
         {
             $match:{
-                user:req.user.id,
+                user:userId,
                 ...dateFilter
             }
         },
@@ -47,7 +50,7 @@ const getSummaryReport = async (req, res) => {
         const assetResult=await Asset.aggregate([
             {
                 $match:{
-                    user:req.user.id,
+                    user:userId,
                     ...dateFilter
                 }
             },
@@ -65,7 +68,7 @@ const getSummaryReport = async (req, res) => {
         const expenseResult=await Expense.aggregate([
             {
                 $match:{
-                    user:req.user.id,
+                    user:userId,
                     ...dateFilter
                 }
             },
@@ -82,7 +85,7 @@ const getSummaryReport = async (req, res) => {
         const loanResult=await Loan.aggregate([
             {
                 $match:{
-                    user:req.user.id,
+                    user:userId,
                     ...dateFilter
                 }
             },
@@ -121,6 +124,7 @@ const getSummaryReport = async (req, res) => {
 }
 const getIncomeCategoryReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const month = Number(req.query.month);
         const year = Number(req.query.year);
 
@@ -145,7 +149,7 @@ const getIncomeCategoryReport = async (req, res) => {
         const report = await Income.aggregate([
             {
                 $match: {
-                    user: req.user.id,
+                    user: userId,
                     ...dateFilter
                 }
             },
@@ -181,6 +185,7 @@ const getIncomeCategoryReport = async (req, res) => {
 };
 const getExpenseCategoryReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const month = Number(req.query.month);
         const year = Number(req.query.year);
 
@@ -205,7 +210,7 @@ const getExpenseCategoryReport = async (req, res) => {
         const report = await Expense.aggregate([
             {
                 $match: {
-                    user: req.user.id,
+                    user: userId,
                     ...dateFilter
                 }
             },
@@ -241,10 +246,11 @@ const getExpenseCategoryReport = async (req, res) => {
 };
 const getMonthlyIncomeReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const report = await Income.aggregate([
             {
                 $match: {
-                    user: req.user.id
+                    user: userId
                 }
             },
             {
@@ -283,10 +289,11 @@ const getMonthlyIncomeReport = async (req, res) => {
 };
 const getMonthlyExpenseReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const report = await Expense.aggregate([
             {
                 $match: {
-                    user: req.user.id
+                    user: userId
                 }
             },
             {
@@ -295,7 +302,7 @@ const getMonthlyExpenseReport = async (req, res) => {
                         year: { $year: "$expenseDate" },
                         month: { $month: "$expenseDate" }
                     },
-                    totalIncome: {
+                    totalExpense: {
                         $sum: "$amount"
                     },
                     totalTransactions: {
@@ -325,16 +332,17 @@ const getMonthlyExpenseReport = async (req, res) => {
 };
 const getGoalStatusReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const report = await Goal.aggregate([
             {
                 $match: {
-                    user: req.user.id
+                    user: userId
                 }
             },
             {
                 $group: {
                     _id: "$status",
-                    totalLoans: {
+                    totalGoals: {
                         $sum: 1
                     },
                     totalTargetAmount: {
@@ -362,10 +370,11 @@ const getGoalStatusReport = async (req, res) => {
 };
 const getLoanStatusReport = async (req, res) => {
     try {
+        const userId = new mongoose.Types.ObjectId(req.user.id);
         const report = await Loan.aggregate([
             {
                 $match: {
-                    user: req.user.id
+                    user: userId
                 }
             },
             {

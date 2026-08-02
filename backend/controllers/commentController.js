@@ -19,7 +19,7 @@ const createComment = async (req, res) => {
             comment: req.body.comment
         });
 
-        Discussion.findByIdAndUpdate(
+        await Discussion.findByIdAndUpdate(
             discussionId,
             {
                 $inc:{
