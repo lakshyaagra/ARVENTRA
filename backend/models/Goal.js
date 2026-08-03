@@ -50,6 +50,10 @@ const goalSchema = new mongoose.Schema({
     publicId:{
         type:String,
     },
+    milestonesNotified: {
+        type: [Number],
+        default: []
+    },
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -58,6 +58,10 @@ const loanSchema=new mongoose.Schema({
         type: String,
         trim: true
     },
+    milestonesNotified: {
+        type: [Number],
+        default: []
+    },
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
