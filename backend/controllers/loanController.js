@@ -147,13 +147,50 @@ const updateLoanById=async (req,res)=>{
             });
         }
         Object.assign(loan,req.body);
-        if(updatedOutstandingAmount===0){
-            loan.status="closed";
-        }
-        else{
-            loan.status="active";
-        }
+        loan.status = updatedOutstandingAmount === 0 ? "closed" : "active";
         await loan.save();
+
+        const repaidPercentage=((loan.updatedPrincipalAmount-loan.updatedOutstandingAmount)/loan.updatedPrincipalAmount)*100;
+        let milestone = null;
+        if (repaidPercentage >= 100) {
+            milestone = 100;
+        }
+        else if (repaidPercentage >= 75) {
+            milestone = 75;
+        }
+        else if (repaidPercentage >= 50) {
+            milestone = 50;
+        }
+        if (milestone &&!loan.milestonesNotified.includes(milestone)) {
+            let title = "";
+            let message = "";
+            switch (milestone) {
+                case 50:
+                    title = "💰 Half Loan Repaid";
+                    message = `You've repaid 50% of "${loan.loanName}". Keep going!`;
+                    break;
+                case 75:
+                    title = "🔥 Almost Debt Free";
+                    message = `You've repaid 75% of "${loan.loanName}".`;
+                    break;
+                case 100:
+                    title = "🎉 Loan Closed";
+                    message = `Congratulations! "${loan.loanName}" has been fully repaid.`;
+                    loan.status = "closed";
+                    break;
+            }
+            await createNotification({
+                user: req.user.id,
+                title,
+                message,
+                type: "loan"
+            });
+
+            loan.milestonesNotified.push(milestone);
+            await loan.save();
+        }
+
+        
         res.status(200).json({
             message: "Loan Updated",
             success: true,

@@ -1,22 +1,131 @@
 const Income=require('../models/Income')
+const User=require('../models/User')
+const {createNotification}=require('../services/notificationService')
 
-const createIncome=async (req,res)=>{
-    try{
-        req.body.user=req.user.id;
-        const income=await Income.create(req.body);
+const createIncome = async (req, res) => {
+    try {
+        req.body.user = req.user.id;
+        const income = await Income.create(req.body);
+
+        // Income Added Notification
+        await createNotification({
+            user: req.user.id,
+            title: "💰 Income Added",
+            message: `₹${income.amount} has been added as ${income.incomeSource}.`,
+            type: "income"
+        });
+
+        //promotional notification for income increase
+        const now = new Date();
+        const currentMonthStart = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1
+        );
+
+        const currentMonthEnd = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            1
+        );
+
+        // Current Month Income
+        const currentMonthIncome = await Income.aggregate([
+            {
+                $match: {
+                    user: req.user.id,
+                    receivedDate: {
+                        $gte: currentMonthStart,
+                        $lt: currentMonthEnd
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ]);
+
+
+        const currentIncome=currentMonthIncome.length>0?currentMonthIncome[0].total:0;
+
+        // Find latest previous month having income
+        const previousIncomeDoc = await Income.findOne({
+            user: req.user.id,
+            receivedDate: {
+                $lt: currentMonthStart
+            }
+        }).sort({ receivedDate: -1 });
+
+        if (previousIncomeDoc) {
+            const previousDate = previousIncomeDoc.receivedDate;
+
+            const previousMonthStart = new Date(
+                previousDate.getFullYear(),
+                previousDate.getMonth(),
+                1
+            );
+
+            const previousMonthEnd = new Date(
+                previousDate.getFullYear(),
+                previousDate.getMonth() + 1,
+                1
+            );
+
+            const previousMonthIncome = await Income.aggregate([
+                {
+                    $match: {
+                        user: req.user.id,
+                        receivedDate: {
+                            $gte: previousMonthStart,
+                            $lt: previousMonthEnd
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: {
+                            $sum: "$amount"
+                        }
+                    }
+                }
+            ]);
+
+            const previousIncome =previousMonthIncome.length > 0? previousMonthIncome[0].total: 0;
+            const currentMonthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, "0")}`;
+            //August 2026 becomes 2026-08
+
+            const user = await User.findById(req.user.id);
+
+            if (previousIncome > 0 && currentIncome > previousIncome &&
+                user.lastIncomeIncreaseNotification !== currentMonthKey){
+                await createNotification({
+                    user: req.user.id,
+                    title: "📈 Income Increased",
+                    message: "Congratulations! Your income this month is higher than your last earning month.",
+                    type: "income"
+                });
+                user.lastIncomeIncreaseNotification = currentMonthKey;
+                await user.save();
+            }
+        }
         res.status(201).json({
-            message: "Income Created",
             success: true,
+            message: "Income Created",
             income
         });
-    }
-    catch(err){
+    }catch(err){
         res.status(500).json({
-            message: err.message,
             success: false,
-        })
+            message: err.message
+        });
     }
-}
+};
 const getIncomes=async (req,res)=>{
     try{
         //sorting
@@ -128,7 +237,7 @@ const updateIncomeById=async (req,res)=>{
         });
         if(!income){
             return res.status(404).json({
-                error: "Income not found",
+                message: "Income not found",
                 success: false
             })
         }

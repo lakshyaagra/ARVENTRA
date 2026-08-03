@@ -1,9 +1,120 @@
 const Expense=require('../models/Expense')
+const Income=require('../models/Income')
+const User=require('../models/User')
 
 const createExpense=async (req,res)=>{
     try{
         req.body.user=req.user.id;
         const expense=await Expense.create(req.body);
+
+        // Expense Added Notification
+        await createNotification({
+            user: req.user.id,
+            title: "💸 Expense Added",
+            message: `₹${expense.amount} spent on ${expense.category}.`,
+            type: "expense"
+        });
+
+        const now = new Date();
+        const currentMonthStart = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1
+        );
+
+        const currentMonthEnd = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            1
+        );
+
+        // Current Month Expense
+        const currentMonthExpense = await Expense.aggregate([
+            {
+                $match: {
+                    user: req.user.id,
+                    receivedDate: {
+                        $gte: currentMonthStart,
+                        $lt: currentMonthEnd
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ]);
+
+        const currentExpense=currentMonthExpense.length>0?currentMonthExpense[0].total:0;
+
+        // Find latest previous month having expenses
+        const previousExpenseDoc = await Expense.findOne({
+            user: req.user.id,
+            receivedDate: {
+                $lt: currentMonthStart
+            }
+        }).sort({ receivedDate: -1 });
+
+        if (previousExpenseDoc) {
+
+            const previousDate = previousExpenseDoc.receivedDate;
+
+            const previousMonthStart = new Date(
+                previousDate.getFullYear(),
+                previousDate.getMonth(),
+                1
+            );
+
+            const previousMonthEnd = new Date(
+                previousDate.getFullYear(),
+                previousDate.getMonth() + 1,
+                1
+            );
+
+            const previousMonthExpense = await Expense.aggregate([
+                {
+                    $match: {
+                        user: req.user.id,
+                        receivedDate: {
+                            $gte: previousMonthStart,
+                            $lt: previousMonthEnd
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: {
+                            $sum: "$amount"
+                        }
+                    }
+                }
+            ]);
+
+            const previousExpense=previousMonthExpense.length>0?previousMonthExpense[0].total:0;
+
+            const currentMonthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+            const user = await User.findById(req.user.id);
+
+            if(previousExpense > 0 && currentExpense > previousExpense &&
+                user.lastExpenseIncreaseNotification !== currentMonthKey){
+                await createNotification({
+                    user: req.user.id,
+                    title: "📈 Expenses Increased",
+                    message: "Your spending this month is higher than your last spending month.",
+                    type: "expense"
+                });
+
+                user.lastExpenseIncreaseNotification = currentMonthKey;
+                await user.save();
+            }
+
+        }
+
         res.status(201).json({
             message: "Expense Created",
             success: true,

@@ -1,9 +1,17 @@
 const Asset=require('../models/Assets');
+const {createNotification}=require('../services/notificationService')
 
 const createAsset=async (req,res)=>{
     try{
         req.body.user=req.user.id;
         const asset=await Asset.create(req.body);
+        // Asset Created Notification
+        await createNotification({
+            user: req.user.id,
+            title: "Asset Created",
+            message: `Your asset "${asset.assetName}" has been created.`,
+            type: "asset"
+        });
         res.status(201).json({
             message: "Asset Created",
             success: true,

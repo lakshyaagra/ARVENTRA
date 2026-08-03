@@ -3,6 +3,8 @@ const Goal = require('../models/Goal');
 const cloudinary=require('../config/cloudinary')
 const fs=require('fs/promises');
 const { log } = require('console');
+const { createNotification} = require('../services/notificationService');
+
 
 const createGoal = async (req, res) => {
     let uploadedGoalImage;
@@ -197,6 +199,64 @@ const updateGoalById=async (req,res)=>{
 
         Object.assign(goal,req.body);
         await goal.save();
+
+        //Smart Notifications Logic
+        const progress = (goal.currentAmount / goal.targetAmount) * 100;
+        let milestone = null;
+
+        //ordering of if else is important,b/c if we check for 25 first 
+        // then it will always be true for 25 & we will never reach 50,75,100
+        if (progress >= 100) {
+            milestone = 100;
+        }
+        else if (progress >= 75) {
+            milestone = 75;
+        }
+        else if (progress >= 50) {
+            milestone = 50;
+        }
+        else if (progress >= 25) {
+            milestone = 25;
+        }
+
+        if ( milestone && !goal.milestonesNotified.includes(milestone)){
+            let title = "";
+            let message = "";
+            switch(milestone) {
+                case 25:
+                    title = "🎯 Great Start!";
+                    message = `You've completed 25% of "${goal.goalName}".`;
+                    break;
+
+                case 50:
+                    title = "🚀 Halfway There!";
+                    message = `You're halfway toward "${goal.goalName}".`;
+                    break;
+
+                case 75:
+                    title = "🔥 Almost Done!";
+                    message = `You've reached 75% of "${goal.goalName}".`;
+                    break;
+
+                case 100:
+                    title = "🏆 Goal Achieved!";
+                    message = `Congratulations! You completed "${goal.goalName}".`;
+                    goal.status = "completed";
+                    break;
+            }
+
+            goal.milestonesNotified.push(milestone);
+            await goal.save();
+
+            await createNotification({
+                user: req.user.id,
+                title,
+                message,
+                type: "goal"
+            });
+        }
+        //Smart Notifications Logic Ends
+
         if(req.file && oldPublicId){  //check ki purani image h ya nhi :- agr h to delete kro from perm. storage
             try{
                 await cloudinary.uploader.destroy(oldPublicId);
