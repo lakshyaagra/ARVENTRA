@@ -2,7 +2,7 @@ const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
-const aiService = async (messages) => {
+const aiService = async (messages,jsonMode = false) => {
     try {
         const contents = messages.map(msg => {
             let role = "user";
@@ -29,7 +29,8 @@ const aiService = async (messages) => {
                 temperature: 0.2,
                 topP: 0.8,
                 topK: 20,
-                maxOutputTokens: 700
+                maxOutputTokens: 700,
+                responseMimeType: jsonMode ? "application/json" : "text/plain",
             }
         });
         return response.text;
