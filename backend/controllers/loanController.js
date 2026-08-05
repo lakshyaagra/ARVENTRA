@@ -1,4 +1,5 @@
 const Loan=require('../models/Loan')
+const {createNotification}=require('../services/notificationService')
 
 const createLoan=async (req,res)=>{
     try{
@@ -150,7 +151,7 @@ const updateLoanById=async (req,res)=>{
         loan.status = updatedOutstandingAmount === 0 ? "closed" : "active";
         await loan.save();
 
-        const repaidPercentage=((loan.updatedPrincipalAmount-loan.updatedOutstandingAmount)/loan.updatedPrincipalAmount)*100;
+        const repaidPercentage=((updatedPrincipalAmount-updatedOutstandingAmount)/updatedPrincipalAmount)*100;
         let milestone = null;
         if (repaidPercentage >= 100) {
             milestone = 100;
@@ -160,6 +161,9 @@ const updateLoanById=async (req,res)=>{
         }
         else if (repaidPercentage >= 50) {
             milestone = 50;
+        }
+        if (!loan.milestonesNotified) {
+            loan.milestonesNotified = [];
         }
         if (milestone &&!loan.milestonesNotified.includes(milestone)) {
             let title = "";

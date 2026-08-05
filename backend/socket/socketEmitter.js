@@ -1,5 +1,3 @@
-// const { userSocketMap } = require("./socket");
-
 let ioInstance = null;
 const setIO = (io) => {
     ioInstance = io;

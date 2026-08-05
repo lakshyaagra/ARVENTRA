@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -12,13 +11,10 @@ const {createComment,getComments,updateCommentById,deleteCommentById}=
 
 // Create Comment
 router.post("/:id/comments",authMiddleware,validateComment,createComment);
-
 // Get Comments
 router.get("/:id/comments",authMiddleware,getComments);
-
 // Update Comment
 router.patch("/comments/:id",authMiddleware,validateUpdateComment,updateCommentById);
-
 // Delete Comment
 router.delete("/comments/:id",authMiddleware,deleteCommentById);
 

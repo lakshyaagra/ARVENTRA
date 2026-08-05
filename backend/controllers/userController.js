@@ -4,7 +4,8 @@ const jwt=require('jsonwebtoken');
 
 const registerUser=async (req,res)=>{
     try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const SALT_ROUNDS = Number(process.env.BCRYPT_ROUNDS) || 12;
+        const hashedPassword = await bcrypt.hash(req.body.password, SALT_ROUNDS);
         req.body.password = hashedPassword;
         const user = await User.create(req.body);
         // user.password = undefined; //password ko response me nahi bhejna chahte , isliye undefined kar diya
@@ -15,8 +16,9 @@ const registerUser=async (req,res)=>{
         })
     }
     catch(err){
+        console.error(err);
         res.status(500).json({
-            message: err.message,
+            message: "Internal Server Error",
             success: false
         })
     }

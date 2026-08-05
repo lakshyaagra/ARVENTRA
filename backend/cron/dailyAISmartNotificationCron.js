@@ -12,7 +12,7 @@ const aiNotificationPromptBuilder = require("../services/aiNotificationPromptBui
 const aiService = require("../services/aiService");
 const { createNotification } = require("../services/notificationService");
 
-cron.schedule("30 9 * * *", async () => {
+cron.schedule("* * * * *", async () => {
     try {
         const users = await User.find();
         const today = new Date().toISOString().split("T")[0];
@@ -33,23 +33,40 @@ cron.schedule("30 9 * * *", async () => {
             const analysis = financialAnalyzer({income,expenses,goals,loans,assets});
 
             const { systemPrompt, financialContext } = aiNotificationPromptBuilder(analysis);
+//             const messages = [
+//                 {
+//                     role: "system",
+//                     content: `${systemPrompt}
+
+// ${financialContext}`
+//                 }
+//             ];
             const messages = [
                 {
                     role: "system",
-                    content: `${systemPrompt}
-
-${financialContext}`
+                    content: systemPrompt
+                },
+                {
+                    role: "user",
+                    content: financialContext
                 }
             ];
+            // console.log(messages);
             try {
-                try{
-                    const response = await aiService(messages,true);
-                    const aiNotification = JSON.parse(response);
+                let aiNotification;
+
+                try {
+                    const response = await aiService(messages, true);
+
+                    console.log("===== RAW RESPONSE =====");
+                    console.log(response);
+                    console.log("========================");
+
+                    aiNotification = JSON.parse(response);
                 }
-                catch(err){
-                    console.log(
-                        `Invalid AI response for user ${user._id}`
-                    );
+                catch (err) {
+                    console.log(`Invalid AI response for user ${user._id}`);
+                    console.error(err);
                     continue;
                 }
 
@@ -69,6 +86,7 @@ ${financialContext}`
                 console.log(
                     `AI Notification Failed for User ${user._id}`
                 );
+                console.log(err);
             }
         }
         console.log("✅ Daily AI Smart Notification Cron Executed");

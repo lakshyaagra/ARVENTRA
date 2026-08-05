@@ -24,7 +24,7 @@ const discussionSchema = new mongoose.Schema(
     category:{
         type:String,
         enum:["budgeting","saving","investment","mutual-funds","stocks","insurance",
-                "loan","tax","credit-score","retirement","financial-planning","other"],
+              "loan","tax","credit-score","retirement","financial-planning","other"],
         default:"other"
     },
     tags:[

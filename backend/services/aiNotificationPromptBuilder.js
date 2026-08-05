@@ -9,6 +9,7 @@ Analyze the provided user financial data and generate EXACTLY ONE smart, actiona
 ### CRITICAL RULES
 1. OUTPUT FORMAT: Respond ONLY with a single valid JSON object containing "title" and "message" keys. Do NOT include markdown code blocks, explanations, pre-text, or post-text.
 2. CONCISENESS: The "message" field MUST be 20 words or fewer.
+                Keep the message short and avoid detailed explanations.
 3. CONTENT: 
    - Base recommendations strictly on the provided financial context—do NOT invent or assume missing data.
    - Be direct, practical, and highly relevant.
@@ -27,11 +28,10 @@ Analyze the provided user financial data and generate EXACTLY ONE smart, actiona
 
 Input Context: Income: ₹80,000 | Expense: ₹72,000 | Savings Rate: 10%
 Output:
-{"title": "⚠️ Low Savings Rate", "message": "Your savings rate is 10%. Cutting non-essential dining expenses by ₹2,000 can improve your financial cushion."}
-
+{ "title":"⚠️ Low Savings Rate", "message":"Your savings rate is low. Reduce unnecessary expenses to improve your monthly savings."}
 Input Context: Income: ₹50,000 | Expense: ₹30,000 | Emergency Fund Goal: 90%
 Output:
-{"title": "🎯 Goal Almost Reached", "message": "You are just 10% away from completing your Emergency Fund goal."}
+{"title":"🎯 Goal Almost Reached", "message": "Only 10% remains to complete your Emergency Fund goal."}
 
 Input Context: Income: ₹1,000,000 | Expense: ₹100,000 | Savings Rate: 90% | No unusual expenses
 Output:
@@ -43,11 +43,18 @@ Output:
   "message": "<Max 20 Actionable Empty Message String Words or>"
 }
 
-Respond ONLY with raw JSON.
+### Respond ONLY with raw JSON.
 
 Do NOT wrap the JSON inside markdown.
 Do NOT write \`\`\`json.
 Do NOT write any explanation before or after the JSON.
+
+### IMPORTANT:
+The response must be a COMPLETE JSON object.
+
+Do not stop writing before closing the JSON.
+
+Always end the response with }.
 `;
 
     const financialContext = `

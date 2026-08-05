@@ -1,7 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// const userSocketMap = new Map();
-
 const initializeSocket = (io) => {
     io.on("connection", (socket) => {
         try {

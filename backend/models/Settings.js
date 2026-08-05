@@ -19,15 +19,7 @@ const settingsSchema = new mongoose.Schema({
             type: Boolean,
             default: true
         },
-        goalReminder: {
-            type: Boolean,
-            default: true
-        },
-        monthlyReport: {
-            type: Boolean,
-            default: true
-        },
-        communityNotification: {
+        savingsAlert: {
             type: Boolean,
             default: true
         },
@@ -37,9 +29,10 @@ const settingsSchema = new mongoose.Schema({
         }
     },
     financial: {
-        currency: {
-            type: String,
-            default: "INR"
+        currency:{
+            type:String,
+            enum:["INR","USD","EUR"],
+            default:"INR"
         },
         salaryDay: {
             type: Number,

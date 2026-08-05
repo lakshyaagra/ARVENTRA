@@ -1,8 +1,6 @@
-// const goals=[];
 const Goal = require('../models/Goal');
 const cloudinary=require('../config/cloudinary')
 const fs=require('fs/promises');
-const { log } = require('console');
 const { createNotification} = require('../services/notificationService');
 
 
@@ -15,7 +13,7 @@ const createGoal = async (req, res) => {
             req.body.image=uploadedGoalImage.secure_url;
             req.body.publicId=uploadedGoalImage.public_id;
         }
-        // req.body.targetAmount = Number(req.body.targetAmount);
+
         const goal = await Goal.create(req.body);
         res.status(201).json({
             message: "Goal Created",
@@ -28,7 +26,7 @@ const createGoal = async (req, res) => {
             try {
                 await cloudinary.uploader.destroy(uploadedGoalImage.public_id);
             } catch (err) {
-                console.log("Cloudinary rollback error:", err.message);
+                console.error("Cloudinary rollback error:", err.message);
             }
         }
 
@@ -44,7 +42,7 @@ const createGoal = async (req, res) => {
                 await fs.unlink(req.file.path);
                 console.log("Temporary file deleted.");
             } catch (err) {
-                console.log("Couldn't delete temporary file:", err.message);
+                console.error("Couldn't delete temporary file:", err.message);
             }
         }
     }
@@ -98,13 +96,7 @@ const getGoals = async (req, res) => {
         const totalPages=Math.ceil(totalGoals/limit);
         const hasNextPage=page<totalPages;
         const hasPreviousPage=page>1;
-        //api response limiting
-        // const fields=req.query.fields;
-        // let selectedFields;
-        // if(fields){
-        //     selectedFields=fields.replaceAll(","," ") + "user";
-        // }                     
-        // const goals=await Goal.find();   //Goal is a Model which is used to fetch data from MongoDB database
+                    
         const goals=await Goal.find(filter)
         .populate('user',"name email").sort(sortObject).skip(skip).limit(limit);
 
@@ -127,8 +119,6 @@ const getGoals = async (req, res) => {
     }
 }
 const getGoalById=async (req, res)=>{
-    // const id=Number(req.params.id);
-    // const goal=goals.find(goal=>goal.id===id)
     try{
         const id=req.params.id;  //as mongoDB generates id alphanumeric , converting to number will give NaN
         const goal=await Goal.findOne({
@@ -160,11 +150,7 @@ const updateGoalById=async (req,res)=>{
     let uploadedGoalImage;
     try{
         const id=req.params.id;
-        // const goal=await Goal.findByIdAndUpdate(
-        //     id, 
-        //     req.body, 
-        //     { new: true }
-        // );
+       
         const goal=await Goal.findOne({
             _id: id,   //current goal id
             user: req.user.id
@@ -181,10 +167,10 @@ const updateGoalById=async (req,res)=>{
             req.body.image=uploadedGoalImage.secure_url;
             req.body.publicId=uploadedGoalImage.public_id;
             try{
-                fs.unlinkSync(req.file.path)
+                await fs.unlink(req.file.path)
             }
             catch(err){
-                console.log("Temporary file can't be deleted",err.message);
+                console.error("Temporary file can't be deleted",err.message);
             }
             //nyi file upload ho gyi
         }
@@ -262,7 +248,7 @@ const updateGoalById=async (req,res)=>{
                 await cloudinary.uploader.destroy(oldPublicId);
             }
             catch(err){
-                console.log("Old file can't be deleted",err.message);
+                console.error("Old file can't be deleted",err.message);
             }
         }
         res.status(200).json({
@@ -280,7 +266,7 @@ const updateGoalById=async (req,res)=>{
             }
         }
         catch(err){
-            console.log("Cloudinary RollBack Error: ",err.message);
+            console.error("Cloudinary RollBack Error: ",err.message);
         }
         res.status(500).json({
             message: err.message,
@@ -290,8 +276,6 @@ const updateGoalById=async (req,res)=>{
 }
 const deleteGoalById=async (req,res)=>{
     try{
-        // const id=req.params.id;
-        // const goal=await Goal.findByIdAndDelete(id);
         const id=req.params.id;
         const goal=await Goal.findOne({
             _id: id,
@@ -308,7 +292,7 @@ const deleteGoalById=async (req,res)=>{
                 await cloudinary.uploader.destroy(goal.publicId)
             }
             catch(err){
-                console.log("Cloudinary image could not be deleted: ",err.message);
+                console.error("Cloudinary image could not be deleted: ",err.message);
             }
         }
         await goal.deleteOne()
@@ -318,7 +302,6 @@ const deleteGoalById=async (req,res)=>{
             goal:goal
         })
     }
-    // goals.splice(index, 1);    //is index se 1 length ka element delete kar do
     catch(err){
         res.status(500).json({
             message: err.message,
