@@ -1,0 +1,17 @@
+@import "tailwindcss";
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap'); */
+ 
+@import url('https://googleapis.com');
+/*
+body {
+    font-family: 'Inter', sans-serif;
+} */
+body{
+    background:
+    radial-gradient(circle at top left,#0F766E15,transparent 40%),
+    radial-gradient(circle at bottom right,#14B8A610,transparent 40%),
+    #090B0B;
+}
+@theme {
+  --font-montserrat: "Montserrat", sans-serif;
+}
