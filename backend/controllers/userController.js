@@ -65,4 +65,26 @@ const loginUser=async (req,res)=>{
     }
 }
 
-module.exports={registerUser, loginUser}
+const getCurrentUser = async (req, res) => { 
+    try { 
+        const user = await User.findById(req.user.id); 
+        if (!user) {
+            return res.status(404).json({ 
+                message: "User not found", 
+                success: false 
+            }); 
+        } 
+        res.status(200).json({ 
+            success: true, 
+            user: user 
+        }); 
+        } catch (err) { 
+            console.error("GET CURRENT USER ERROR:",err); 
+            res.status(500).json({ 
+                message: "Internal Server Error", 
+                success: false 
+            }); 
+        } 
+    };
+
+module.exports={registerUser, loginUser, getCurrentUser}

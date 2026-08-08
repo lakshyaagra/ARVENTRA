@@ -4,6 +4,7 @@ const emiReminderJob=require("./cron/emiReminderJob");
 const { initializeSocket } = require("./socket/socket")
 const { Server } = require("socket.io");
 const { setIO } = require("./socket/socketEmitter");
+const cors=require("cors")
 
 require("./cron/savingsRateAlertCron");
 require("./cron/dailyAISmartNotificationCron");
@@ -21,6 +22,12 @@ emiReminderJob();
 app.use(express.json());
 const connectDB=require('./config/db');
 connectDB(); 
+
+app.use(
+    cors({
+        origin: "http://localhost:5173"
+    })
+);
 
 const goalsRouter=require('./routes/goals');
 const usersRouter=require('./routes/users');
