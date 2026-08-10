@@ -12,7 +12,7 @@ const aiNotificationPromptBuilder = require("../services/aiNotificationPromptBui
 const aiService = require("../services/aiService");
 const { createNotification } = require("../services/notificationService");
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("30 9 * * *", async () => {
     try {
         const users = await User.find();
         const today = new Date().toISOString().split("T")[0];
