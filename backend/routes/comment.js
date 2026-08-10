@@ -12,7 +12,7 @@ const {createComment,getComments,updateCommentById,deleteCommentById}=
 // Create Comment
 router.post("/:id/comments",authMiddleware,validateComment,createComment);
 // Get Comments
-router.get("/:id/comments",authMiddleware,getComments);
+router.get("/:id/comments",getComments);
 // Update Comment
 router.patch("/comments/:id",authMiddleware,validateUpdateComment,updateCommentById);
 // Delete Comment

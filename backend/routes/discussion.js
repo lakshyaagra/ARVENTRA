@@ -14,7 +14,7 @@ const {createDiscussion,getDiscussions,updateDiscussionById,deleteDiscussionById
 router.post("/",authMiddleware,validateDiscussion,createDiscussion);
 
 // Get All Discussions
-router.get("/",authMiddleware,getDiscussions);
+router.get("/",getDiscussions);
 
 // Update Discussion
 router.patch("/:id",authMiddleware,validateUpdateDiscussion,updateDiscussionById);
