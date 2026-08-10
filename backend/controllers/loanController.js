@@ -4,7 +4,7 @@ const {createNotification}=require('../services/notificationService')
 const createLoan=async (req,res)=>{
     try{
         req.body.user=req.user.id;
-        const outstandingAmount=Number(req.body.outstanding)
+        const outstandingAmount=Number(req.body.outstandingAmount)
         if(outstandingAmount===0){
             req.body.status='closed';
         }

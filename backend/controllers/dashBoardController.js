@@ -5,6 +5,10 @@ const Loan = require("../models/Loan");
 const Asset = require("../models/Assets");
 const Expense = require("../models/Expense");
 const Income = require("../models/Income");
+const {
+  calculateCreditHealthScore,
+  getCreditHealthStatus,
+} = require("../services/creditHealthService");
 
 const getDashboard = async (req, res) =>{
     try {
@@ -73,7 +77,10 @@ const getDashboard = async (req, res) =>{
                     _id:null,
                     totalOutstandingLoans:{
                         $sum:"$outstandingAmount"
-                    }
+                    },
+                    totalEMI: {
+                        $sum: "$emiAmount",
+                    },
                 }
             }
         ]);
@@ -125,9 +132,39 @@ const getDashboard = async (req, res) =>{
         const recentGoals=await Goal.find({
             user:userId
         }).sort({createdAt:-1}).limit(5).populate("user","name email");
+        const recentAssets = await Asset.find({
+            user: userId
+        }).sort({ createdAt: -1 }).limit(5).populate("user","name email");
 
         const netWorth=totalAssets-totalOutstandingLoans;
         const savings=totalIncome-totalExpense;
+        const savingsRate =
+        totalIncome > 0
+            ? Number(((savings / totalIncome) * 100).toFixed(2))
+            : 0;
+
+        const totalEMI = loanResult.length > 0
+        ? loanResult[0].totalEMI
+        : 0;
+
+        const debtToIncomeRatio =
+        totalIncome > 0
+            ? Number((totalEMI / totalIncome).toFixed(2))
+            : 0;
+
+        const assetLoanRatio =
+        totalOutstandingLoans > 0
+            ? Number((totalAssets / totalOutstandingLoans).toFixed(2))
+            : null;
+
+        const creditHealthScore = calculateCreditHealthScore({
+            savingsRate,
+            debtToIncomeRatio,
+            assetLoanRatio,
+            activeLoans,
+        });
+
+        const creditHealthStatus = getCreditHealthStatus(creditHealthScore);
 
 
         res.status(200).json({
@@ -142,6 +179,9 @@ const getDashboard = async (req, res) =>{
                 netWorth,
                 savings,
 
+                creditHealthScore,
+                creditHealthStatus,
+
                 totalLoans,
                 activeLoans,
                 closedLoans,
@@ -153,6 +193,7 @@ const getDashboard = async (req, res) =>{
                 totalExpenseCount,
                 totalIncomeRecords,
 
+                recentAssets,
                 recentExpenses,
                 recentLoans,
                 recentIncome,
