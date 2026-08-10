@@ -9,10 +9,10 @@ const Home = () => {
       {/* ================= NAVBAR ================= */}
       <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <div className="flex cursor-pointer gap-1 items-center justify-center" onClick={() => navigate("/")}>
-            <img src={ ARVENTRA } alt="Logo" className="h-18 w-18" />
+          <div className="flex cursor-pointer gap-0 items-center justify-center" onClick={() => navigate("/")}>
+            <img src={ ARVENTRA } alt="Logo" className="h-18 w-18 cursor-pointer" />
             <button
-                className="text-xl font-semibold tracking-wide text-white"
+                className="text-xl cursor-pointer font-semibold tracking-wide text-white"
             >
                 ARVENTRA
             </button>
@@ -25,7 +25,7 @@ const Home = () => {
               Learn
             </button>
             <button
-              onClick={() => navigate("/community")}
+              onClick={() => navigate("/learning")}
               className="transition hover:text-white"
             >
               Community
@@ -388,7 +388,7 @@ const Home = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate("/community")}
+                  onClick={() => navigate("/learning")}
                   className="mt-6 text-sm text-teal-400 hover:text-teal-300"
                 >
                   Join the discussion →

@@ -3,7 +3,9 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import DashboardLayout from "../layouts/DashboardLayout";
 import Home from "../pages/Home";
+import Learning from "../pages/Learning";
 
 const AppRoutes = () => {
     return (
@@ -12,8 +14,11 @@ const AppRoutes = () => {
                 <Route path="/" element={<Home/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/register" element={<Register/>} />
+                <Route path="/learning" element={<Learning/>}/>
                 <Route element={<ProtectedRoute />}> 
-                    <Route path="/dashboard" element={<Dashboard />} /> 
+                    <Route element={<DashboardLayout />}>
+                        <Route path="/dashboard" element={<Dashboard />} /> 
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

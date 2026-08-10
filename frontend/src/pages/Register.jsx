@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../validations/authValidation";
 import { register as registerUser } from "../services/authService";
+import ARVENTRA from "../assets/ARVENTRA.png"
 
 const Register = () => {
     const navigate = useNavigate();

@@ -4,6 +4,8 @@ import {
     TrendingUp,
     Target,
 } from "lucide-react";
+import ARVENTRA from "../../assets/ARVENTRA.png"
+
 
 const features = [
     {
@@ -47,17 +49,20 @@ const AuthLeftPanel = () => {
             <div>
                 <div className="flex items-center">
                     <div>
-                        <h1
-                            className="
-                                text-3xl
-                                font-black
-                                tracking-[0.16em]
-                                text-white
-                                font-montserrat
-                            "
-                        >
-                            ARVENTRA
-                        </h1>
+                        <div className="flex justify-start items-center -mb-1 gap-0">
+                            <img src={ ARVENTRA } alt="Logo" className="h-18 w-18 cursor-pointer" />
+                            <h1
+                                className="
+                                    text-3xl
+                                    font-black
+                                    tracking-[0.16em]
+                                    text-white
+                                    font-montserrat
+                                "
+                            >
+                                ARVENTRA
+                            </h1>
+                        </div>
 
                         <div className="mt-3 flex items-center gap-2">
                             <span
