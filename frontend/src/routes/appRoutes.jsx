@@ -7,6 +7,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Home from "../pages/Home";
 import Learning from "../pages/Learning";
 import CreditHealth from "../pages/CreditHealth"
+import Goals from '../pages/Goal'
 
 const AppRoutes = () => {
     return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} /> 
                         <Route path="/credit-health" element={<CreditHealth />} />
+                        <Route path="/goals" element={<Goals />} />
                     </Route>
                 </Route>
             </Routes>

@@ -1443,7 +1443,7 @@ const CommunityPanel = () => {
       ====================================================== */}
 
       {showCreate && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div style={{ scrollbarWidth: 'none'}}
             className="max-h-[90vh] w-full max-w-xl overflow-y-auto [&::-webkit-scrollbar]:hidden rounded-2xl border border-[#293432] bg-[#111817] p-6 shadow-2xl">
             <div className="mb-6 flex items-start justify-between gap-4">

@@ -178,6 +178,10 @@ const getDashboard = async (req, res) =>{
 
                 netWorth,
                 savings,
+                savingsRate,
+                totalEMI,
+                debtToIncomeRatio,
+                assetLoanRatio,
 
                 creditHealthScore,
                 creditHealthStatus,
