@@ -6,6 +6,7 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Home from "../pages/Home";
 import Learning from "../pages/Learning";
+import CreditHealth from "../pages/CreditHealth"
 
 const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
                 <Route element={<ProtectedRoute />}> 
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} /> 
+                        <Route path="/credit-health" element={<CreditHealth />} />
                     </Route>
                 </Route>
             </Routes>
