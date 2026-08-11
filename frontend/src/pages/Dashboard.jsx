@@ -239,6 +239,72 @@ const EmptyNote = ({
   );
 };
 
+//helper for recommendations
+
+const getCreditHealthRecommendation = ({
+    savingsRate,
+    debtToIncomeRatio,
+    assetLoanRatio,
+    activeLoans,
+  }) => {
+    if (savingsRate !== null && savingsRate < 10) {
+      return {
+        title: "Focus on building your savings",
+        description:
+          "Your current savings rate is low. Try to reduce unnecessary spending and keep a portion of your income aside regularly.",
+      };
+    }
+
+    if (
+      debtToIncomeRatio !== null &&
+      debtToIncomeRatio >= 0.5
+    ) {
+      return {
+        title: "Focus on reducing debt pressure",
+        description:
+          "A large portion of your income is going toward loan obligations. Reducing outstanding debt could improve your financial health.",
+      };
+    }
+
+    if (
+      assetLoanRatio !== null &&
+      assetLoanRatio < 1
+    ) {
+      return {
+        title: "Strengthen your asset position",
+        description:
+          "Your outstanding loans are currently higher than your assets. Building assets and reducing debt can improve your financial position.",
+      };
+    }
+
+    if (activeLoans >= 3) {
+      return {
+        title: "Focus on managing your active loans",
+        description:
+          "You currently have several active loans. Reviewing your loan obligations and prioritising repayment may help reduce financial pressure.",
+      };
+    }
+
+    if (
+      savingsRate !== null &&
+      savingsRate >= 35 &&
+      debtToIncomeRatio !== null &&
+      debtToIncomeRatio < 0.35
+    ) {
+      return {
+        title: "Keep your current financial habits",
+        description:
+          "Your savings and debt position are currently healthy. Stay consistent and continue building your financial stability.",
+      };
+    }
+
+    return {
+      title: "Keep improving your financial position",
+      description:
+        "Your financial health is progressing. Continue monitoring your savings, debt, assets, and loans to identify areas where you can improve.",
+    };
+  };
+
 /* =====================================================================
    PAGE
    ===================================================================== */
@@ -331,6 +397,15 @@ const Dashboard = () => {
 
   const creditHealthScore = dashboard?.creditHealthScore ?? null;
 
+  const savingsRate =
+    dashboard?.savingsRate ?? null;
+
+  const debtToIncomeRatio =
+    dashboard?.debtToIncomeRatio ?? null;
+
+  const assetLoanRatio =
+    dashboard?.assetLoanRatio ?? null;
+
   const creditHealthStatus = dashboard?.creditHealthStatus ?? null;
   const recentExpenses = dashboard?.recentExpenses ?? [];
   const recentLoans = dashboard?.recentLoans ?? [];
@@ -349,6 +424,14 @@ const Dashboard = () => {
     totalFlow > 0
       ? Math.round((totalExpense / totalFlow) * 100)
       : 0;
+
+  const creditRecommendation =
+    getCreditHealthRecommendation({
+      savingsRate,
+      debtToIncomeRatio,
+      assetLoanRatio,
+      activeLoans,
+    });
 
   /* ================================================================
      RECENT ACTIVITY
@@ -712,6 +795,36 @@ const Dashboard = () => {
             <p className="mt-4 text-center text-[11.2px] leading-relaxed text-slate-600">
               * This credit health score is calculated based on your internal financial status and is not an official score from credit bureaus.
             </p>
+          </SectionCard>
+
+          {/* WHAT SHOULD I FOCUS NOW? */}
+
+          <SectionCard
+            eyebrow="Next step"
+            title="What should I focus on?"
+          >
+            <div className="mt-7 rounded-xl border border-[#293533] bg-[#1B2422] p-5">
+              <p className="text-base font-medium text-slate-200">
+                {creditRecommendation.title}
+              </p>
+
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                {creditRecommendation.description}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => navigate("/credit-health")}
+                className="mt-5 flex items-center gap-1 text-sm font-medium text-teal-400 transition-colors hover:text-teal-300"
+              >
+                View your credit health
+
+                <ArrowRight
+                  className="h-3.5 w-3.5"
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
           </SectionCard>
 
           {/* RECENT ACTIVITY */}
