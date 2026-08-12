@@ -8,6 +8,9 @@ import Home from "../pages/Home";
 import Learning from "../pages/Learning";
 import CreditHealth from "../pages/CreditHealth"
 import Goals from '../pages/Goal'
+import Income from "../pages/Income";
+import Expense from "../pages/Expense"
+import Assets from "../pages/Assets";
 
 const AppRoutes = () => {
     return (
@@ -22,6 +25,9 @@ const AppRoutes = () => {
                         <Route path="/dashboard" element={<Dashboard />} /> 
                         <Route path="/credit-health" element={<CreditHealth />} />
                         <Route path="/goals" element={<Goals />} />
+                        <Route path="/income" element={<Income />} />
+                        <Route path="/expenses" element={<Expense />} />
+                        <Route path="/assets" element={<Assets />} />
                     </Route>
                 </Route>
             </Routes>

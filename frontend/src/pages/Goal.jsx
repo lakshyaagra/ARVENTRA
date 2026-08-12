@@ -21,9 +21,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   fetchGoals,
+  fetchGoalById,
   createGoal,
   updateGoal,
   deleteGoal,
+  clearGoal,
 } from "../features/goals/goalSlice";
 
 /* =====================================================================
@@ -66,7 +68,6 @@ const priorityStyles = {
 
 const PriorityBadge = ({ priority }) => {
   if (!priority) return null;
-
   return (
     <span
       className={`rounded-full border px-2.5 py-1 text-[11px] font-medium capitalize ${
@@ -124,9 +125,11 @@ GOAL IMAGE
 ===================================================================== */
 
 const GoalImage = ({ image, goalName }) => {
+
   if (!image) {
     return (
-      <div className="flex h-32 w-full items-center justify-center rounded-xl border border-[#293533] bg-[#141B1A]">
+      <div className="flex h-32 w-full items-center justify-center rounded-xl border
+                     border-[#293533] bg-[#141B1A]">
         <div className="text-center">
           <ImagePlus className="mx-auto h-6 w-6 text-slate-700" />
 
@@ -154,11 +157,12 @@ const GoalImage = ({ image, goalName }) => {
 GOAL CARD
 ===================================================================== */
 
-const GoalCard = ({ goal, onEdit, onDelete, deleting }) => {
+const GoalCard = ({ goal, onEdit, onDelete, onViewDetails, deleting }) => {
   const progress = getProgress(goal.currentAmount, goal.targetAmount);
 
   return (
     <article className="group rounded-2xl border border-[#293533] bg-[#171F1E] p-6 transition-colors hover:border-[#3A4946]">
+
       {/* =========================================================
                HEADER
             ========================================================= */}
@@ -237,19 +241,29 @@ const GoalCard = ({ goal, onEdit, onDelete, deleting }) => {
         </div>
       </div>
 
+
       {/* =========================================================
                ACTIONS
             ========================================================= */}
 
       <div className="mt-6 flex items-center justify-end gap-3 border-t border-[#293533] pt-5">
+
+        <button
+          type="button"
+          onClick={() => onViewDetails(goal._id)}
+          disabled={deleting}
+          className="inline-flex items-center gap-2 rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-medium text-[#10201D] transition-colors hover:bg-teal-400 disabled:opacity-50"
+        >
+          View Details
+        </button>
         <button
           type="button"
           onClick={() => onEdit(goal)}
-          disabled={deleting}
+          disabled={deleting || goal.status === "completed"}
           className="inline-flex items-center gap-2 rounded-xl border border-[#293533] px-4 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:border-teal-500/40 hover:bg-teal-500/5 hover:text-teal-400 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Pencil className="h-4 w-4" />
-          Edit
+          {goal.status === "completed" ? "Completed" : "Edit"}
         </button>
 
         <button
@@ -265,6 +279,7 @@ const GoalCard = ({ goal, onEdit, onDelete, deleting }) => {
           )}
           Delete
         </button>
+
       </div>
     </article>
   );
@@ -342,7 +357,7 @@ const Select = ({ label, children, ...props }) => (
 GOAL FORM MODAL
 ===================================================================== */
 
-const GoalFormModal = ({
+const GoalFormModal = ({ 
   open,
   onClose,
   onSubmit,
@@ -446,7 +461,6 @@ const GoalFormModal = ({
     if (!file) return;
 
     setImage(file);
-
     setPreview(URL.createObjectURL(file));
   };
 
@@ -619,21 +633,13 @@ const GoalFormModal = ({
               disabled={submitting}
             >
               <option value="education">Education</option>
-
               <option value="travel">Travel</option>
-
               <option value="electronics">Electronics</option>
-
               <option value="vehicle">Vehicle</option>
-
               <option value="home">Home</option>
-
               <option value="investment">Investment</option>
-
               <option value="emergency">Emergency</option>
-
               <option value="personal">Personal</option>
-
               <option value="other">Other</option>
             </Select>
 
@@ -674,7 +680,6 @@ const GoalFormModal = ({
           </div>
 
           {/* IMAGE */}
-
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-300">
               Goal image
@@ -691,12 +696,11 @@ const GoalFormModal = ({
                   alt="Goal preview"
                   className="h-48 w-full object-cover"
                 />
-              ) : (
+              ):(
                 <div className="flex flex-col items-center px-6 py-10 text-center">
                   <ImagePlus className="h-7 w-7 text-slate-600" />
 
                   <p className="mt-3 text-sm text-slate-400">Upload an image</p>
-
                   <p className="mt-1 text-xs text-slate-600">
                     PNG, JPG or WEBP
                   </p>
@@ -724,7 +728,6 @@ const GoalFormModal = ({
             >
               Cancel
             </button>
-
             <button
               type="submit"
               disabled={submitting}
@@ -759,6 +762,382 @@ const GoalFormModal = ({
 };
 
 /* =====================================================================
+GOAL DETAILS MODAL
+===================================================================== */
+
+const GoalDetailsModal = ({ open, onClose }) => {
+  const dispatch = useDispatch();
+
+  const { goal, goalLoading, goalError, updating } = useSelector(
+    (state) => state.goals
+  );
+
+  const [contribution, setContribution] = useState("");
+  const [contributionError, setContributionError] = useState("");
+  const [contributing, setContributing] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setContribution("");
+      setContributionError("");
+      setContributing(false);
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  const progress = getProgress(
+    goal?.currentAmount,
+    goal?.targetAmount
+  );
+
+  /* ================================================================
+     ADD CONTRIBUTION
+  ================================================================ */
+
+  const handleAddContribution = async (event) => {
+    event.preventDefault();
+
+    setContributionError("");
+
+    const amount = Number(contribution);
+
+    if (!goal) {
+      return;
+    }
+
+    if (Number.isNaN(amount) || amount <= 0) {
+      setContributionError("Contribution must be greater than zero.");
+      return;
+    }
+
+    const currentAmount = Number(goal.currentAmount || 0);
+    const targetAmount = Number(goal.targetAmount || 0);
+
+    const newAmount = currentAmount + amount;
+
+    if (newAmount > targetAmount) {
+      setContributionError(
+        `You can only add ${currency(
+          Math.max(targetAmount - currentAmount, 0)
+        )} more to this goal.`
+      );
+      return;
+    }
+
+    try {
+      setContributing(true);
+
+      const formData = new FormData();
+
+      formData.append("currentAmount", newAmount);
+
+      await dispatch(
+        updateGoal({
+          id: goal._id,
+          goalData: formData,
+        })
+      ).unwrap();
+
+      setContribution("");
+
+      // Refresh the goal details with the new amount.
+      await dispatch(fetchGoalById(goal._id)).unwrap();
+    } catch (error) {
+      setContributionError(
+        error?.message || "Failed to add contribution."
+      );
+    } finally {
+      setContributing(false);
+    }
+  };
+
+  const isSubmitting = contributing || updating;
+
+  return (
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div 
+           className="w-full max-w-lg overflow-hidden rounded-2xl border border-[#293533] bg-[#171F1E] shadow-2xl">
+
+        {/* HEADER */}
+
+        <div className="flex items-center justify-between border-b border-[#293533] px-5 py-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-slate-600">
+              Goal details
+            </p>
+
+            <h2 className="mt-1 text-lg font-semibold text-slate-100">
+              {goalLoading ? "Loading..." : goal?.goalName || "Goal"}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-[#1F2927] hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* LOADING */}
+
+        {goalLoading && (
+          <div className="space-y-4 p-5">
+            <div className="h-44 animate-pulse rounded-xl bg-[#141B1A]" />
+
+            <div className="h-5 w-40 animate-pulse rounded bg-[#24302D]" />
+
+            <div className="h-3 animate-pulse rounded bg-[#24302D]" />
+          </div>
+        )}
+
+        {/* ERROR */}
+
+        {!goalLoading && goalError && (
+          <div className="p-8 text-center">
+            <p className="text-sm text-red-400">
+              {goalError}
+            </p>
+          </div>
+        )}
+
+        {/* CONTENT */}
+
+        {!goalLoading && !goalError && goal && (
+          <div style={{ scrollbarWidth: 'none'}}
+               className="max-h-[75vh] overflow-y-auto [&::-webkit-scrollbar]:hidden">
+
+            {/* IMAGE */}
+
+            {goal.image ? (
+              <img
+                src={goal.image}
+                alt={goal.goalName}
+                className="h-52 w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-36 items-center justify-center bg-[#141B1A]">
+                <Target className="h-10 w-10 text-slate-700" />
+              </div>
+            )}
+
+            <div className="space-y-5 p-5">
+
+              {/* TITLE + BADGES */}
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusBadge status={goal.status} />
+
+                  <PriorityBadge priority={goal.priority} />
+
+                  {goal.category && (
+                    <span className="rounded-full border border-[#34413E] bg-[#141B1A] px-2.5 py-1 text-[11px] capitalize text-slate-500">
+                      {goal.category}
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="mt-3 text-xl font-semibold text-slate-100">
+                  {goal.goalName}
+                </h3>
+
+                {goal.description && (
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    {goal.description}
+                  </p>
+                )}
+              </div>
+
+              {/* PROGRESS */}
+
+              <div className="rounded-xl border border-[#293533] bg-[#141B1A] p-4">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-slate-600">
+                      Saved
+                    </p>
+
+                    <p className="mt-1 text-xl font-semibold text-slate-100">
+                      {currency(goal.currentAmount)}
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-slate-500">
+                    of {currency(goal.targetAmount)}
+                  </p>
+                </div>
+
+                <div className="mt-4">
+                  <ProgressBar progress={progress} />
+                </div>
+
+                <div className="mt-2 flex justify-between">
+                  <span className="text-[11px] text-slate-600">
+                    {progress.toFixed(0)}% complete
+                  </span>
+
+                  <span className="text-[11px] text-slate-600">
+                    {currency(
+                      Math.max(
+                        Number(goal.targetAmount || 0) -
+                          Number(goal.currentAmount || 0),
+                        0
+                      )
+                    )}{" "}
+                    remaining
+                  </span>
+                </div>
+              </div>
+
+              {/* INFO */}
+
+              <div className="grid grid-cols-2 gap-3">
+
+                <div className="rounded-xl border border-[#293533] bg-[#141B1A] p-4">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-teal-400" />
+
+                    <p className="text-xs text-slate-600">
+                      Target
+                    </p>
+                  </div>
+
+                  <p className="mt-2 text-sm font-semibold text-slate-200">
+                    {currency(goal.targetAmount)}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-[#293533] bg-[#141B1A] p-4">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-teal-400" />
+
+                    <p className="text-xs text-slate-600">
+                      Deadline
+                    </p>
+                  </div>
+
+                  <p className="mt-2 text-sm font-semibold text-slate-200">
+                    {formatDate(goal.deadline)}
+                  </p>
+                </div>
+
+              </div>
+
+              {/* ======================================================
+                  ADD CONTRIBUTION
+              ====================================================== */}
+
+              {goal.status !== "completed" &&
+                Number(goal.currentAmount || 0) <
+                  Number(goal.targetAmount || 0) && (
+                <form
+                  onSubmit={handleAddContribution}
+                  className="rounded-xl border border-teal-500/20 bg-teal-500/5 p-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500/10">
+                      <Plus className="h-4 w-4 text-teal-400" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-slate-200">
+                        Add contribution
+                      </p>
+
+                      <p className="text-xs text-slate-600">
+                        Add money directly to this goal
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex gap-3">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-600">
+                        ₹
+                      </span>
+
+                      <input
+                        type="number"
+                        min="1"
+                        step="0.01"
+                        value={contribution}
+                        onChange={(event) => {
+                          setContribution(event.target.value);
+                          setContributionError("");
+                        }}
+                        placeholder="Enter amount"
+                        disabled={isSubmitting}
+                        className="w-full rounded-xl border border-[#293533] bg-[#141B1A] py-3 pl-8 pr-4 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-teal-500/50 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={
+                        isSubmitting ||
+                        !contribution ||
+                        Number(contribution) <= 0
+                      }
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-500 px-4 py-3 text-sm font-medium text-[#10201D] transition-colors hover:bg-teal-400 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {contributionError && (
+                    <p className="mt-2 text-xs text-red-400">
+                      {contributionError}
+                    </p>
+                  )}
+
+                  <p className="mt-3 text-[11px] text-slate-600">
+                    Remaining:{" "}
+                    {currency(
+                      Math.max(
+                        Number(goal.targetAmount || 0) -
+                          Number(goal.currentAmount || 0),
+                        0
+                      )
+                    )}
+                  </p>
+                </form>
+              )}
+
+              {/* CLOSE */}
+
+              <div className="border-t border-[#293533] pt-4">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                  className="w-full rounded-xl border border-[#293533] px-4 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:border-[#3A4946] hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Close
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+/* =====================================================================
 PAGE
 ===================================================================== */
 
@@ -777,6 +1156,7 @@ const Goals = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   /* ================================================================
        FETCH
@@ -914,6 +1294,21 @@ const Goals = () => {
     } catch (error) {
       console.error("Delete goal failed:", error);
     }
+  };
+
+  const handleViewDetails = async (goalId) => {
+    setDetailsOpen(true);
+
+    try {
+      await dispatch(fetchGoalById(goalId)).unwrap();
+    } catch (error) {
+      console.error("Failed to fetch goal details:", error);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    setDetailsOpen(false);
+    dispatch(clearGoal());
   };
 
   /* ================================================================
@@ -1143,6 +1538,7 @@ const Goals = () => {
                 goal={goal}
                 onEdit={handleOpenEdit}
                 onDelete={handleDeleteGoal}
+                onViewDetails={handleViewDetails}
                 deleting={deleting}
               />
             ))}
@@ -1188,6 +1584,10 @@ const Goals = () => {
         onSubmit={handleSubmitGoal}
         submitting={creating || updating}
         editingGoal={editingGoal}
+      />
+      <GoalDetailsModal
+        open={detailsOpen}
+        onClose={handleCloseDetails}
       />
     </div>
   );
