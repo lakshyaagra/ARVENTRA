@@ -161,6 +161,12 @@ const updateGoalById=async (req,res)=>{
                 success: false
             })
         }
+        if (goal.status === "completed") {
+            return res.status(400).json({
+                success: false,
+                message: "Completed goals cannot be modified.",
+            });
+        }
         const oldPublicId=goal.publicId;
         if(req.file){
             uploadedGoalImage=await cloudinary.uploader.upload(req.file.path);
@@ -183,8 +189,8 @@ const updateGoalById=async (req,res)=>{
             })
         }
 
+        delete req.body.status;
         Object.assign(goal,req.body);
-        await goal.save();
 
         //Smart Notifications Logic
         const progress = (goal.currentAmount / goal.targetAmount) * 100;
