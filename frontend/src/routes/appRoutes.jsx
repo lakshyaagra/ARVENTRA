@@ -11,6 +11,8 @@ import Goals from '../pages/Goal'
 import Income from "../pages/Income";
 import Expense from "../pages/Expense"
 import Assets from "../pages/Assets";
+import Loan from "../pages/Loan"
+import Reports from "../pages/Reports"
 
 const AppRoutes = () => {
     return (
@@ -28,6 +30,8 @@ const AppRoutes = () => {
                         <Route path="/income" element={<Income />} />
                         <Route path="/expenses" element={<Expense />} />
                         <Route path="/assets" element={<Assets />} />
+                        <Route path="/loans" element={<Loan />} />
+                        <Route path="/reports" element={<Reports/>} />
                     </Route>
                 </Route>
             </Routes>

@@ -6,6 +6,8 @@ import goalReducer from "../features/goals/goalSlice";
 import incomeReducer from "../features/income/incomeSlice"
 import expenseReducer from "../features/expenses/expenseSlice"
 import assetReducer from "../features/assets/assetSlice"
+import loanReducer from "../features/loans/loanSlice"
+import reportReducer from "../features/reports/reportSlice"
 
 export const store = configureStore({
     reducer: {
@@ -16,5 +18,8 @@ export const store = configureStore({
         income:incomeReducer,
         expense:expenseReducer,
         assets:assetReducer,
+        loan:loanReducer,
+        report:reportReducer,
+        
     }
 });

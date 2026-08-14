@@ -69,8 +69,8 @@ const CommunityPanel = () => {
       "Content-Type": "application/json",
       ...(token
         ? {
-            Authorization: `Bearer ${token}`,
-          }
+          Authorization: `Bearer ${token}`,
+        }
         : {}),
     };
   };
@@ -399,10 +399,10 @@ const CommunityPanel = () => {
         previous.map((discussion) =>
           discussion._id === selectedDiscussion._id
             ? {
-                ...discussion,
-                commentsCount:
-                  (discussion.commentsCount || 0) + 1,
-              }
+              ...discussion,
+              commentsCount:
+                (discussion.commentsCount || 0) + 1,
+            }
             : discussion
         )
       );
@@ -410,10 +410,10 @@ const CommunityPanel = () => {
       setSelectedDiscussion((previous) =>
         previous
           ? {
-              ...previous,
-              commentsCount:
-                (previous.commentsCount || 0) + 1,
-            }
+            ...previous,
+            commentsCount:
+              (previous.commentsCount || 0) + 1,
+          }
           : previous
       );
     } catch (error) {
@@ -472,7 +472,7 @@ const CommunityPanel = () => {
             likesCount: Math.max(
               0,
               (item.likesCount || 0) +
-                (isLiked ? 1 : -1)
+              (isLiked ? 1 : -1)
             ),
           };
         })
@@ -487,7 +487,7 @@ const CommunityPanel = () => {
           likesCount: Math.max(
             0,
             (previous.likesCount || 0) +
-              (isLiked ? 1 : -1)
+            (isLiked ? 1 : -1)
           ),
         }));
       }
@@ -595,12 +595,12 @@ const CommunityPanel = () => {
           previous.map((discussion) =>
             discussion._id === selectedDiscussion._id
               ? {
-                  ...discussion,
-                  commentsCount: Math.max(
-                    0,
-                    (discussion.commentsCount || 0) - 1
-                  ),
-                }
+                ...discussion,
+                commentsCount: Math.max(
+                  0,
+                  (discussion.commentsCount || 0) - 1
+                ),
+              }
               : discussion
           )
         );
@@ -645,7 +645,7 @@ const CommunityPanel = () => {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            "Failed to delete discussion."
+          "Failed to delete discussion."
         );
       }
 
@@ -670,7 +670,7 @@ const CommunityPanel = () => {
 
       alert(
         error.message ||
-          "Something went wrong while deleting the discussion."
+        "Something went wrong while deleting the discussion."
       );
     }
   };
@@ -707,7 +707,7 @@ const CommunityPanel = () => {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            "Failed to update discussion."
+          "Failed to update discussion."
         );
       }
 
@@ -735,7 +735,7 @@ const CommunityPanel = () => {
 
       alert(
         error.message ||
-          "Something went wrong while updating the discussion."
+        "Something went wrong while updating the discussion."
       );
 
       return false;
@@ -1102,7 +1102,7 @@ const CommunityPanel = () => {
               discussionOwnerId &&
               currentUserId &&
               String(discussionOwnerId) ===
-                String(currentUserId);
+              String(currentUserId);
 
             return (
               <article
@@ -1117,11 +1117,10 @@ const CommunityPanel = () => {
                 <div className="mb-3 flex min-w-0 items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <span
-                      className={`shrink-0 rounded-full px-2 py-1 text-[10px] ${
-                        discussion.type === "question"
+                      className={`shrink-0 rounded-full px-2 py-1 text-[10px] ${discussion.type === "question"
                           ? "bg-teal-500/10 text-teal-400"
                           : "bg-slate-500/10 text-slate-400"
-                      }`}
+                        }`}
                     >
                       {discussion.type === "question"
                         ? "Question"
@@ -1192,10 +1191,10 @@ const CommunityPanel = () => {
 
                   {discussion.views !==
                     undefined && (
-                    <span className="text-[11px] text-slate-600">
-                      ◉ {discussion.views}
-                    </span>
-                  )}
+                      <span className="text-[11px] text-slate-600">
+                        ◉ {discussion.views}
+                      </span>
+                    )}
 
                   {/* OWNER ACTIONS */}
 
@@ -1241,167 +1240,167 @@ const CommunityPanel = () => {
 
                 {editingDiscussionId ===
                   discussion._id && (
-                  <div
-                    className="mt-4 rounded-xl border border-teal-500/20 bg-[#101716] p-4"
-                    onClick={(event) =>
-                      event.stopPropagation()
-                    }
-                  >
-                    <form
-                      onSubmit={handleSaveEdit}
-                      className="space-y-4"
+                    <div
+                      className="mt-4 rounded-xl border border-teal-500/20 bg-[#101716] p-4"
+                      onClick={(event) =>
+                        event.stopPropagation()
+                      }
                     >
-                      <div>
-                        <label className="mb-2 block text-[10px] text-slate-600">
-                          Title
-                        </label>
+                      <form
+                        onSubmit={handleSaveEdit}
+                        className="space-y-4"
+                      >
+                        <div>
+                          <label className="mb-2 block text-[10px] text-slate-600">
+                            Title
+                          </label>
 
-                        <input
-                          type="text"
-                          value={editForm.title}
-                          maxLength={150}
-                          onChange={(event) =>
-                            setEditForm(
-                              (previous) => ({
-                                ...previous,
-                                title:
-                                  event.target
+                          <input
+                            type="text"
+                            value={editForm.title}
+                            maxLength={150}
+                            onChange={(event) =>
+                              setEditForm(
+                                (previous) => ({
+                                  ...previous,
+                                  title:
+                                    event.target
+                                      .value,
+                                })
+                              )
+                            }
+                            className="w-full rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-200 outline-none focus:border-teal-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-[10px] text-slate-600">
+                            Content
+                          </label>
+
+                          <textarea
+                            value={editForm.content}
+                            rows={5}
+                            onChange={(event) =>
+                              setEditForm(
+                                (previous) => ({
+                                  ...previous,
+                                  content:
+                                    event.target
+                                      .value,
+                                })
+                              )
+                            }
+                            className="w-full resize-none rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs leading-5 text-slate-300 outline-none focus:border-teal-500"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <select
+                            value={editForm.type}
+                            onChange={(event) =>
+                              setEditForm(
+                                (previous) => ({
+                                  ...previous,
+                                  type: event.target
                                     .value,
-                              })
-                            )
-                          }
-                          className="w-full rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-200 outline-none focus:border-teal-500"
-                        />
-                      </div>
+                                })
+                              )
+                            }
+                            className="rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-400 outline-none focus:border-teal-500"
+                          >
+                            <option value="question">
+                              Question
+                            </option>
 
-                      <div>
-                        <label className="mb-2 block text-[10px] text-slate-600">
-                          Content
-                        </label>
+                            <option value="blog">
+                              Blog
+                            </option>
+                          </select>
 
-                        <textarea
-                          value={editForm.content}
-                          rows={5}
-                          onChange={(event) =>
-                            setEditForm(
-                              (previous) => ({
-                                ...previous,
-                                content:
-                                  event.target
-                                    .value,
-                              })
-                            )
-                          }
-                          className="w-full resize-none rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs leading-5 text-slate-300 outline-none focus:border-teal-500"
-                        />
-                      </div>
+                          <select
+                            value={editForm.category}
+                            onChange={(event) =>
+                              setEditForm(
+                                (previous) => ({
+                                  ...previous,
+                                  category:
+                                    event.target
+                                      .value,
+                                })
+                              )
+                            }
+                            className="rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-400 outline-none focus:border-teal-500"
+                          >
+                            <option value="other">
+                              Other
+                            </option>
 
-                      <div className="grid grid-cols-2 gap-2">
-                        <select
-                          value={editForm.type}
-                          onChange={(event) =>
-                            setEditForm(
-                              (previous) => ({
-                                ...previous,
-                                type: event.target
-                                  .value,
-                              })
-                            )
-                          }
-                          className="rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-400 outline-none focus:border-teal-500"
-                        >
-                          <option value="question">
-                            Question
-                          </option>
+                            <option value="budgeting">
+                              Budgeting
+                            </option>
 
-                          <option value="blog">
-                            Blog
-                          </option>
-                        </select>
+                            <option value="saving">
+                              Saving
+                            </option>
 
-                        <select
-                          value={editForm.category}
-                          onChange={(event) =>
-                            setEditForm(
-                              (previous) => ({
-                                ...previous,
-                                category:
-                                  event.target
-                                    .value,
-                              })
-                            )
-                          }
-                          className="rounded-lg border border-[#293432] bg-[#151D1C] px-3 py-2 text-xs text-slate-400 outline-none focus:border-teal-500"
-                        >
-                          <option value="other">
-                            Other
-                          </option>
+                            <option value="investment">
+                              Investment
+                            </option>
 
-                          <option value="budgeting">
-                            Budgeting
-                          </option>
+                            <option value="mutual-funds">
+                              Mutual Funds
+                            </option>
 
-                          <option value="saving">
-                            Saving
-                          </option>
+                            <option value="stocks">
+                              Stocks
+                            </option>
 
-                          <option value="investment">
-                            Investment
-                          </option>
+                            <option value="insurance">
+                              Insurance
+                            </option>
 
-                          <option value="mutual-funds">
-                            Mutual Funds
-                          </option>
+                            <option value="loan">
+                              Loan
+                            </option>
 
-                          <option value="stocks">
-                            Stocks
-                          </option>
+                            <option value="tax">
+                              Tax
+                            </option>
 
-                          <option value="insurance">
-                            Insurance
-                          </option>
+                            <option value="credit-score">
+                              Credit Score
+                            </option>
 
-                          <option value="loan">
-                            Loan
-                          </option>
+                            <option value="retirement">
+                              Retirement
+                            </option>
 
-                          <option value="tax">
-                            Tax
-                          </option>
+                            <option value="financial-planning">
+                              Financial Planning
+                            </option>
+                          </select>
+                        </div>
 
-                          <option value="credit-score">
-                            Credit Score
-                          </option>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={cancelEditing}
+                            className="rounded-md border border-[#293432] px-3 py-2 text-[10px] text-slate-600 hover:text-slate-300"
+                          >
+                            Cancel
+                          </button>
 
-                          <option value="retirement">
-                            Retirement
-                          </option>
-
-                          <option value="financial-planning">
-                            Financial Planning
-                          </option>
-                        </select>
-                      </div>
-
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={cancelEditing}
-                          className="rounded-md border border-[#293432] px-3 py-2 text-[10px] text-slate-600 hover:text-slate-300"
-                        >
-                          Cancel
-                        </button>
-
-                        <button
-                          type="submit"
-                          className="rounded-md bg-teal-500 px-3 py-2 text-[10px] font-medium text-[#07100F] hover:bg-teal-400"
-                        >
-                          Save changes
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
+                          <button
+                            type="submit"
+                            className="rounded-md bg-teal-500 px-3 py-2 text-[10px] font-medium text-[#07100F] hover:bg-teal-400"
+                          >
+                            Save changes
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
               </article>
             );
           })
@@ -1444,7 +1443,7 @@ const CommunityPanel = () => {
 
       {showCreate && (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div style={{ scrollbarWidth: 'none'}}
+          <div style={{ scrollbarWidth: 'none' }}
             className="max-h-[90vh] w-full max-w-xl overflow-y-auto [&::-webkit-scrollbar]:hidden rounded-2xl border border-[#293432] bg-[#111817] p-6 shadow-2xl">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
@@ -1495,12 +1494,11 @@ const CommunityPanel = () => {
                         })
                       )
                     }
-                    className={`rounded-lg border px-4 py-3 text-xs ${
-                      newDiscussion.type ===
-                      "question"
+                    className={`rounded-lg border px-4 py-3 text-xs ${newDiscussion.type ===
+                        "question"
                         ? "border-teal-500/50 bg-teal-500/10 text-teal-400"
                         : "border-[#293432] text-slate-500"
-                    }`}
+                      }`}
                   >
                     Ask a question
                   </button>
@@ -1515,11 +1513,10 @@ const CommunityPanel = () => {
                         })
                       )
                     }
-                    className={`rounded-lg border px-4 py-3 text-xs ${
-                      newDiscussion.type === "blog"
+                    className={`rounded-lg border px-4 py-3 text-xs ${newDiscussion.type === "blog"
                         ? "border-teal-500/50 bg-teal-500/10 text-teal-400"
                         : "border-[#293432] text-slate-500"
-                    }`}
+                      }`}
                   >
                     Share a blog
                   </button>
@@ -1731,7 +1728,7 @@ const CommunityPanel = () => {
 
       {showComments &&
         selectedDiscussion && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
             <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#293432] bg-[#111817] shadow-2xl">
               {/* Modal header */}
 
@@ -1739,15 +1736,14 @@ const CommunityPanel = () => {
                 <div className="min-w-0">
                   <div className="mb-3 flex items-center gap-2">
                     <span
-                      className={`rounded-full px-2 py-1 text-[10px] ${
-                        selectedDiscussion.type ===
-                        "question"
+                      className={`rounded-full px-2 py-1 text-[10px] ${selectedDiscussion.type ===
+                          "question"
                           ? "bg-teal-500/10 text-teal-400"
                           : "bg-slate-500/10 text-slate-400"
-                      }`}
+                        }`}
                     >
                       {selectedDiscussion.type ===
-                      "question"
+                        "question"
                         ? "Question"
                         : "Blog"}
                     </span>
@@ -1860,7 +1856,7 @@ const CommunityPanel = () => {
                           commentOwnerId &&
                           currentUserId &&
                           String(commentOwnerId) ===
-                            String(currentUserId);
+                          String(currentUserId);
 
                         return (
                           <div
@@ -1926,7 +1922,7 @@ const CommunityPanel = () => {
                             </div>
 
                             {editingCommentId ===
-                            comment._id ? (
+                              comment._id ? (
                               <div className="mt-3">
                                 <textarea
                                   value={
@@ -1973,7 +1969,7 @@ const CommunityPanel = () => {
                                 </div>
                               </div>
                             ) : (
-                              <p className="mt-3 whitespace-pre-wrap break-words text-xs leading-6 text-slate-400">
+                              <p className="mt-3 whitespace-pre-wrap wrap-break-word text-xs leading-6 text-slate-400">
                                 {comment.comment}
 
                                 {comment.isEdited && (

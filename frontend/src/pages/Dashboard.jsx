@@ -797,6 +797,33 @@ const Dashboard = () => {
             </p>
           </SectionCard>
 
+          {/* REPORTS */}
+
+          <SectionCard
+            eyebrow="Reports"
+            title="Financial reports"
+          >
+            <div className="mt-7 rounded-xl border border-[#293533] bg-[#1B2422] p-5">
+              <p className="text-sm leading-6 text-slate-500">
+                Review your income, expenses, savings, loans, and financial
+                trends through GRAPHICAL detailed reports.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => navigate("/reports")}
+                className="mt-5 flex items-center gap-1 text-sm font-medium text-teal-400 transition-colors hover:text-teal-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60"
+              >
+                View reports
+
+                <ArrowRight
+                  className="h-3.5 w-3.5"
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </SectionCard>
+
           {/* WHAT SHOULD I FOCUS NOW? */}
 
           <SectionCard
