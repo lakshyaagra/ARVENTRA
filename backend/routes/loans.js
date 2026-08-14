@@ -5,7 +5,7 @@ const validateUpdateLoan= require('../middleware/validateUpdateLoan')
 const { createLoan,getLoans,getLoanById,updateLoanById, deleteLoanById } = require("../controllers/loanController");
 const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/',authMiddleware,validateUpdateLoan, createLoan);
+router.post('/',authMiddleware,validateLoan, createLoan);
 router.get('/',authMiddleware,getLoans); 
 router.get('/:id',authMiddleware, getLoanById);
 router.put('/:id', authMiddleware,validateUpdateLoan, updateLoanById);

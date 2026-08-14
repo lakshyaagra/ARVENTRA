@@ -6,44 +6,57 @@ const Asset = require("../models/Assets");
 const Expense = require("../models/Expense");
 const Income = require("../models/Income");
     
+const buildDateFilter = (field, month, year) => {
+    const filter = {};
+    if (month && year) {
+        filter.$expr = {
+            $and: [
+                {
+                    $eq: [
+                        { $month: `$${field}` },
+                        month
+                    ]
+                },
+                {
+                    $eq: [
+                        { $year: `$${field}` },
+                        year
+                    ]
+                }
+            ]
+        };
+    }else if (year) {
+        filter.$expr = {
+            $eq: [
+                { $year: `$${field}` },
+                year
+            ]
+        };
+    }
+    return filter;
+};
 const getSummaryReport = async (req, res) => {
     try {
         const month = Number(req.query.month);
         const year = Number(req.query.year);
 
-        const dateFilter={};
-
-        if(month && year){
-            dateFilter.$expr={
-                $and:[
-                    { $eq: [{$month: "$createdAt"}, month] },
-                    { $eq: [{$year: "$createdAt"}, year] },               
-                ]
-            };
-        }
-        else if(year){
-            dateFilter.$expr={
-                $eq:[
-                    { $year: "$createdAt" }, year           
-                ]
-            };
-        }
         const userId = new mongoose.Types.ObjectId(req.user.id);
-        const incomeResult=await Income.aggregate([
-        {
-            $match:{
-                user:userId,
-                ...dateFilter
-            }
-        },
-        {
-            $group:{
-                _id:null,
-                totalIncome:{
-                    $sum:"$amount"
+        const incomeDateFilter = buildDateFilter("receivedDate",month,year);
+        const incomeResult = await Income.aggregate([
+            {
+                $match: {
+                    user: userId,
+                    ...incomeDateFilter
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalIncome: {
+                        $sum: "$amount"
+                    }
                 }
             }
-        }
         ]);
         const totalIncome=incomeResult.length>0?incomeResult[0].totalIncome:0;
 
@@ -51,7 +64,6 @@ const getSummaryReport = async (req, res) => {
             {
                 $match:{
                     user:userId,
-                    ...dateFilter
                 }
             },
             {
@@ -63,13 +75,14 @@ const getSummaryReport = async (req, res) => {
                 }
             }
         ]);
-        const totalAssets=assetResult.length>0?assetResult[0].totalAssets:0;
+        const totalAssetValue=assetResult.length>0?assetResult[0].totalAssets:0;
 
+        const expenseDateFilter = buildDateFilter("expenseDate",month,year);
         const expenseResult=await Expense.aggregate([
             {
                 $match:{
                     user:userId,
-                    ...dateFilter
+                    ...expenseDateFilter
                 }
             },
             {
@@ -82,11 +95,12 @@ const getSummaryReport = async (req, res) => {
             }
         ]);
         const totalExpense=expenseResult.length>0?expenseResult[0].totalExpense:0;
+
         const loanResult=await Loan.aggregate([
             {
                 $match:{
                     user:userId,
-                    ...dateFilter
+                    status: "active"
                 }
             },
             {
@@ -100,7 +114,7 @@ const getSummaryReport = async (req, res) => {
         ]);
         const totalOutstandingLoans =loanResult.length>0?loanResult[0].totalOutstandingLoans:0;
 
-        const netWorth=totalAssets-totalOutstandingLoans;
+        const netWorth=totalAssetValue-totalOutstandingLoans;
         const savings=totalIncome-totalExpense;
 
         res.status(200).json({
@@ -108,7 +122,7 @@ const getSummaryReport = async (req, res) => {
             report:{
                 totalIncome,
                 totalExpense,
-                totalAssets,
+                totalAssets: totalAssetValue,
                 totalOutstandingLoans,
                 savings,
                 netWorth
@@ -133,15 +147,15 @@ const getIncomeCategoryReport = async (req, res) => {
         if (month && year) {
             dateFilter.$expr = {
                 $and: [
-                    { $eq: [{ $month: "$createdAt" }, month] },
-                    { $eq: [{ $year: "$createdAt" }, year] }
+                    { $eq: [{ $month: "$receivedDate" }, month] },
+                    { $eq: [{ $year: "$receivedDate" }, year] }
                 ]
             };
         }
         else if (year) {
             dateFilter.$expr = {
                 $eq: [
-                    { $year: "$createdAt" },
+                    { $year: "$receivedDate" },
                     year
                 ]
             };

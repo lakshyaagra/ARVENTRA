@@ -77,7 +77,7 @@ const validateUpdateLoan=(req,res,next)=>{
             });
         }
     }
-    if(nextDueDate!==undefined){
+    if(nextDueDate){
         const parsedDueDate=new Date(nextDueDate);
         if(Number.isNaN(parsedDueDate.getTime())){
             return res.status(400).json({
@@ -92,7 +92,7 @@ const validateUpdateLoan=(req,res,next)=>{
             });
         }
     }
-    if(notes!==undefined){
+    if(notes!==undefined && notes !== null && notes !== ""){
         if(typeof notes!=="string" || notes.trim()===""){
             return res.status(400).json({
                 success:false,
