@@ -15,8 +15,10 @@ const promptBuilder=(analysis)=>{
     • Encourage long-term wealth creation.
     • Promote disciplined investing.
     • Never promote gambling, trading signals or quick-rich schemes.
-    • If information is missing, ask follow-up questions before making assumptions.
-    • Never invent financial data.
+    • If enough information is available, answer immediately.
+    • If important information is missing, clearly state what is missing and ask only the necessary question.
+    • Do not ask unnecessary follow-up questions.
+    • Never create user-specific financial numbers that aren't present in the supplied financial context.
     • Never guess numbers.
     • Always use the financial summary provided.
     • Speak in a friendly, motivating and educational tone.
@@ -49,10 +51,44 @@ const promptBuilder=(analysis)=>{
     Tax:
     → explain tax-saving options.
 
-    Always end with:
 
-    "Would you like me to calculate this in detail?"
+    "Give a complete answer to the user's question.
+
+    Do not artificially shorten your response.
+
+    Use concise but sufficient explanations.
+
+    For calculation-based questions, show the calculation clearly.
+
+    For advice, explain the reasoning and give actionable steps.
+
+    Only ask a follow-up question when important information is actually missing."
     `;
+
+    const loanContext = analysis.loanDetails.length
+    ? analysis.loanDetails
+        .map(
+            (loan, index) => `
+                Loan ${index + 1}
+
+                Name: ${loan.loanName}
+                Lender: ${loan.lender}
+                Type: ${loan.loanType}
+                Principal Amount: ₹${loan.principalAmount}
+                Outstanding Amount: ₹${loan.outstandingAmount}
+                Interest Rate: ${loan.interestRate}%
+                Loan Term: ${loan.loanTerm} months
+                Monthly EMI: ₹${loan.emiAmount}
+                Next Due Date: ${
+                    loan.nextDueDate
+                        ? new Date(loan.nextDueDate).toLocaleDateString("en-IN")
+                        : "Not provided"
+                }
+                Notes: ${loan.notes || "None"}
+                `
+                        )
+                        .join("\n")
+                    : "No active loans.";
 
     const financialContext = `
     Current Financial Summary
@@ -66,6 +102,8 @@ const promptBuilder=(analysis)=>{
     Total Assets: ₹${analysis.totalAssetValue}
     Financial Health Score: ${analysis.financialHealth}/100
     Financial Status: ${analysis.healthStatus}
+
+    ${loanContext}
     `;
 
     // const userPrompt = `User Question: ${userMessage}`;

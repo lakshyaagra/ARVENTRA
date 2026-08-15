@@ -60,6 +60,9 @@ const chatWithAI = async (req,res)=>{
         ];
 
         const aiReply = await aiService(messages);
+        console.log("========== ARVENTRA AI RESPONSE ==========");
+        console.log(aiReply);
+        console.log("==========================================");
         conversation.messages.push({
             role: "user",
             content: message

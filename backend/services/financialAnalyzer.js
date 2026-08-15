@@ -26,9 +26,32 @@ const financialAnalyzer=({income=[],expenses=[],goals=[],loans=[],assets=[]})=>{
         (sum,item)=>sum + item.currentValue,
         0
     );
-    const activeLoanCount=loans.filter(
-        loan => loan.status === "active"
-    ).length;
+    const activeLoans = loans.filter(
+        (loan) => loan.status === "active"
+    );
+
+    const activeLoanCount = activeLoans.length;
+
+    const loanDetails = activeLoans.map((loan) => ({
+        loanName: loan.loanName,
+        lender: loan.lender,
+        loanType: loan.loanType,
+        principalAmount: Number(loan.principalAmount || 0),
+        outstandingAmount: Number(loan.outstandingAmount || 0),
+        interestRate: Number(loan.interestRate || 0),
+        loanTerm: Number(loan.loanTerm || 0),
+        emiAmount: Number(loan.emiAmount || 0),
+        nextDueDate: loan.nextDueDate || null,
+        status: loan.status,
+        notes: loan.notes || "",
+    }));
+
+    const totalMonthlyEMI = activeLoans.reduce(
+        (sum, loan) => sum + Number(loan.emiAmount || 0),
+        0
+    );
+
+    const emiToIncomeRatio = totalIncome === 0 ? 0 :(totalMonthlyEMI / totalIncome) * 100;
 
     let financialHealth = 0;
     // Savings Rate
@@ -93,7 +116,8 @@ const financialAnalyzer=({income=[],expenses=[],goals=[],loans=[],assets=[]})=>{
 
     return {
         totalIncome,totalExpenses,monthlySavings,savingsRate,totalGoalAmount,totalCurrentGoalAmount,
-        goalProgress,totalLoanAmount,totalAssetValue,activeLoanCount,financialHealth,healthStatus
+        goalProgress,totalLoanAmount,loanDetails,emiToIncomeRatio,totalAssetValue,activeLoanCount,
+        financialHealth,healthStatus,totalMonthlyEMI
     };
 }
 module.exports=financialAnalyzer
