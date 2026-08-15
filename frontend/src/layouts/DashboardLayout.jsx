@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import ARVENTRA from "../assets/ARVENTRA.png";
+import ArventraAIBubble from "../components/AI/ArventraAIBubble";
 
 /**
  * Brand mark + wordmark as a single clickable control.
@@ -20,7 +21,7 @@ const BrandMark = ({ onClick }) => (
         as an arbitrary value, is taller than the header itself and forces
         the row to overflow. Sized to sit comfortably inside py-4. */}
     <img src={ARVENTRA} alt="" className="h-18 w-18 object-contain" />
-    <span className="text-lg font-semibold tracking-wide text-white h-">
+    <span className="text-lg font-semibold tracking-wide text-white">
       ARVENTRA
     </span>
   </button>
@@ -42,8 +43,6 @@ const UserMenuTrigger = ({ initial = "U" }) => (
 );
 
 const DashboardLayout = () => {
-  // Fix: `navigate` was referenced but never defined — the logo click
-  // would have thrown a ReferenceError at runtime.
   const navigate = useNavigate();
 
   return (
@@ -75,8 +74,8 @@ const DashboardLayout = () => {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+      <ArventraAIBubble/>
     </div>
   );
 };
-
 export default DashboardLayout;

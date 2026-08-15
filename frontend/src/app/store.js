@@ -8,6 +8,7 @@ import expenseReducer from "../features/expenses/expenseSlice"
 import assetReducer from "../features/assets/assetSlice"
 import loanReducer from "../features/loans/loanSlice"
 import reportReducer from "../features/reports/reportSlice"
+import aiReducer from "../features/ai/aiSlice"
 
 export const store = configureStore({
     reducer: {
@@ -20,6 +21,6 @@ export const store = configureStore({
         assets:assetReducer,
         loan:loanReducer,
         report:reportReducer,
-        
+        ai:aiReducer,
     }
 });
