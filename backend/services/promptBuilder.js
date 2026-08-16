@@ -52,7 +52,7 @@ const promptBuilder=(analysis)=>{
     → explain tax-saving options.
 
 
-    "Give a complete answer to the user's question.
+    Give a complete answer to the user's question.
 
     Do not artificially shorten your response.
 
@@ -93,15 +93,32 @@ const promptBuilder=(analysis)=>{
     const financialContext = `
     Current Financial Summary
 
+    Income:
     Monthly Income: ₹${analysis.totalIncome}
+
+    Expenses:
     Monthly Expenses: ₹${analysis.totalExpenses}
+
+    Cash Flow:
     Monthly Savings: ₹${analysis.monthlySavings}
     Savings Rate: ${analysis.savingsRate.toFixed(2)}%
-    Goal Progress: ${analysis.goalProgress.toFixed(2)}%
-    Outstanding Loan: ₹${analysis.totalLoanAmount}
-    Total Assets: ₹${analysis.totalAssetValue}
-    Financial Health Score: ${analysis.financialHealth}/100
-    Financial Status: ${analysis.healthStatus}
+
+    Goals:
+    Total Goal Progress: ${analysis.goalProgress.toFixed(2)}%
+
+    Debt:
+    Active Loans: ${analysis.activeLoanCount}
+    Outstanding Loan Amount: ₹${analysis.totalLoanAmount}
+    Total Monthly EMI: ₹${analysis.totalMonthlyEMI}
+    EMI-to-Income Ratio: ${analysis.emiToIncomeRatio.toFixed(2)}%
+    Debt-to-Income Ratio: ${analysis.debtToIncomeRatio}
+
+    Assets:
+    Total Asset Value: ₹${analysis.totalAssetValue}
+
+    Financial Health:
+    Score: ${analysis.financialHealth}/100
+    Status: ${analysis.healthStatus}
 
     ${loanContext}
     `;

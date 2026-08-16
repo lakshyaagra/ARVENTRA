@@ -33,7 +33,8 @@ const creditHealthSummary = async (req, res) => {
             Loan.aggregate([
                 {
                     $match: {
-                        user: userId
+                        user: userId,
+                        status: "active",
                     }
                 },
                 {

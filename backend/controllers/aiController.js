@@ -9,9 +9,23 @@ const financialAnalyzer = require("../services/financialAnalyzer");
 const promptBuilder = require("../services/promptBuilder");
 const aiService = require("../services/aiService");
 
+const generateConversationTitle = (message) => {
+    const cleaned = message
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (!cleaned) {
+        return "New Conversation";
+    }
+    if (cleaned.length <= 50) {
+        return cleaned;
+    }
+    return cleaned.slice(0, 47) + "...";
+};
+
 const chatWithAI = async (req,res)=>{
     try{
-        const { message } = req.body;
+        const { message,conversationId } = req.body;
         if(!message){
             return res.status(400).json({
                 success:false,
@@ -33,11 +47,16 @@ const chatWithAI = async (req,res)=>{
         //message is the req.body from user and not the above array of messages
         const { systemPrompt, financialContext } = promptBuilder(analysis);
 
-        let conversation=await AIConversation.findOne({user: req.user.id});
+        let conversation=await AIConversation.findOne({
+            user: req.user.id,
+            _id: conversationId,
+        });
         if (!conversation) {
+            const title = generateConversationTitle(message);
             conversation=await AIConversation.create({
                 user: req.user.id,
-                messages: []
+                messages: [],
+                title,
             });
         }
 
@@ -60,9 +79,6 @@ const chatWithAI = async (req,res)=>{
         ];
 
         const aiReply = await aiService(messages);
-        console.log("========== ARVENTRA AI RESPONSE ==========");
-        console.log(aiReply);
-        console.log("==========================================");
         conversation.messages.push({
             role: "user",
             content: message
@@ -135,7 +151,9 @@ const chatWithAI = async (req,res)=>{
         await conversation.save();
         return res.status(200).json({
             success: true,
-            reply: aiReply
+            reply: aiReply,
+            conversationId: conversation._id,
+            title: conversation.title,
         });
     }
     catch(err){
@@ -145,4 +163,55 @@ const chatWithAI = async (req,res)=>{
         });
     }
 }
-module.exports={chatWithAI}
+
+const getConversations = async (req, res) => {
+    try {
+        const conversations = await AIConversation.find({
+            user: req.user.id,
+        })
+            .select("_id title createdAt updatedAt")
+            .sort({ updatedAt: -1 })
+            .limit(20);
+
+        return res.status(200).json({
+            success: true,
+            conversations,
+        });
+    } catch (err) {
+        console.error("GET AI CONVERSATIONS ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load conversations.",
+        });
+    }
+};
+const getConversationById = async (req, res) => {
+    try {
+        const conversation = await AIConversation.findOne({
+            _id: req.params.conversationId,
+            user: req.user.id,
+        });
+
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: "Conversation not found.",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            conversation,
+        });
+    } catch (err) {
+        console.error("GET AI CONVERSATION ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load conversation.",
+        });
+    }
+};
+
+module.exports={chatWithAI,getConversations,getConversationById};
