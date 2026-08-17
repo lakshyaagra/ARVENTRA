@@ -1,4 +1,4 @@
-# 🚀 Project Udaan
+# 🚀 ARVENTRA
 
 > An AI-Powered Financial Operating System built to help users track finances, achieve goals, improve financial health, and receive intelligent AI-driven financial insights.
 
