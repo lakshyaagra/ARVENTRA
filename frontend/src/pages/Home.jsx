@@ -31,6 +31,12 @@ const Home = () => {
               Community
             </button>
             <button
+              onClick={() => navigate("/calculators")}
+              className="transition hover:text-white"
+            >
+              Calculators
+            </button>
+            <button
               onClick={() => navigate("/login")}
               className="transition hover:text-white"
             >
@@ -272,7 +278,7 @@ const Home = () => {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl border border-[#293432] bg-[#151D1C] p-6">
+              <div className="rounded-xl border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
                 <p className="text-sm font-medium text-slate-200">
                   Understand spending
                 </p>
@@ -283,7 +289,7 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#293432] bg-[#151D1C] p-6">
+              <div className="rounded-xl border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
                 <p className="text-sm font-medium text-slate-200">
                   Work toward your goals
                 </p>
@@ -293,7 +299,7 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#293432] bg-[#151D1C] p-6">
+              <div className="rounded-xl border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
                 <p className="text-sm font-medium text-slate-200">
                   Learn financial concepts
                 </p>
@@ -304,7 +310,7 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#293432] bg-[#151D1C] p-6">
+              <div className="rounded-xl border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
                 <p className="text-sm font-medium text-slate-200">
                   Make better decisions
                 </p>
@@ -315,6 +321,121 @@ const Home = () => {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ================= FINANCIAL CALCULATORS ================= */}
+        <section className="border-y border-[#26302F] bg-[#141B1A]">
+          <div className="mx-auto max-w-7xl px-6 py-20">
+
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+
+                <p className="text-sm uppercase tracking-[0.18em] text-teal-400">
+                  Practical financial tools
+                </p>
+
+                <h2 className="mt-3 text-3xl font-semibold text-slate-100 md:text-4xl">
+                  Make financial decisions with numbers you can understand.
+                </h2>
+
+                <p className="mt-5 text-sm leading-7 text-slate-400">
+                  Explore simple financial calculators for interest, investments,
+                  loans, retirement planning, taxes, and everyday financial decisions.
+                  No account required.
+                </p>
+
+              </div>
+
+              <button
+                onClick={() => navigate("/calculators")}
+                className="shrink-0 text-sm font-medium text-teal-400 transition hover:text-teal-300"
+              >
+                Explore calculators →
+              </button>
+            </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+              {/* INVESTMENTS */}
+
+              <div className="rounded-xl  border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-600">
+                  Investments
+                </p>
+
+                <h3 className="mt-3 text-lg font-medium text-slate-100">
+                  Plan your investments
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Estimate returns from SIPs, lump-sum investments, and other
+                  investment options.
+                </p>
+              </div>
+
+              {/* LOANS */}
+
+              <div className="rounded-xl  border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-600">
+                  Loans
+                </p>
+
+                <h3 className="mt-3 text-lg font-medium text-slate-100">
+                  Understand your loan
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Calculate EMIs, total interest, and total payments before taking
+                  on a loan.
+                </p>
+              </div>
+
+              {/* SAVINGS */}
+
+              <div className="rounded-xl  border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-600">
+                  Savings
+                </p>
+
+                <h3 className="mt-3 text-lg font-medium text-slate-100">
+                  Grow your savings
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Explore interest, fixed deposits, recurring deposits, and other
+                  savings calculations.
+                </p>
+              </div>
+
+              {/* PLANNING */}
+
+              <div className="rounded-xl  border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-6">
+                <p className="text-xs uppercase tracking-[0.16em] text-slate-600">
+                  Planning
+                </p>
+
+                <h3 className="mt-3 text-lg font-medium text-slate-100">
+                  Plan ahead
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Estimate retirement needs, taxes, returns, and other important
+                  financial outcomes.
+                </p>
+              </div>
+
+            </div>
+
+            <div className="mt-8 border-l border-teal-500/40 pl-4">
+              <p className="text-sm leading-7 text-slate-500">
+                Built for practical decisions, not complicated spreadsheets.
+                <span className="text-slate-300">
+                  {" "}Choose a calculator, enter your numbers, and understand the result.
+                </span>
+              </p>
+            </div>
+
           </div>
         </section>
 
@@ -335,7 +456,7 @@ const Home = () => {
             <div className="mt-12 -mb-10 grid gap-5 lg:grid-cols-[1.85fr_1fr]">
               {/* LEARNING — 65% */}
 
-              <div className="rounded-2xl border border-[#293533] bg-[#171F1E] p-7">
+              <div className="rounded-2xl  border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-7">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="mt-2 text-xl font-medium text-slate-100">
@@ -352,19 +473,19 @@ const Home = () => {
                 </div>
 
                 <div className="mt-8 space-y-3">
-                  <div className="rounded-lg border border-[#293533] bg-[#1B2422] px-5 py-4">
+                  <div className="rounded-lg border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] px-5 py-4">
                     <p className="text-sm text-slate-200">
                       Understanding mutual funds
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-[#293533] bg-[#1B2422] px-5 py-4">
+                  <div className="rounded-lg border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] px-5 py-4">
                     <p className="text-sm text-slate-200">
                       Building an emergency fund
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-[#293533] bg-[#1B2422] px-5 py-4">
+                  <div className="rounded-lg border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] px-5 py-4">
                     <p className="text-sm text-slate-200">
                       Understanding credit scores
                     </p>
@@ -374,7 +495,7 @@ const Home = () => {
 
               {/* COMMUNITY — 35% */}
 
-              <div className="rounded-2xl border border-[#293533] bg-[#171F1E] p-7">
+              <div className="rounded-2xl border border-[#24302D] transition-colors hover:border-teal-700/40 bg-[#151D1C] p-7">
                 <h3 className="mt-2 text-xl font-medium text-slate-100">
                   Community
                 </h3>
@@ -442,6 +563,13 @@ const Home = () => {
               className="hover:text-slate-300"
             >
               Community
+            </button>
+
+            <button
+              onClick={() => navigate("/calculators")}
+              className="hover:text-slate-300"
+            >
+              Calculators
             </button>
 
             <button

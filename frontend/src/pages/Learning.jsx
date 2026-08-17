@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ARVENTRA from "../assets/ARVENTRA.png"
 
-import FinanceArticle from "../components/learning/FinanceArticle";
-import CommunityPanel from "../components/learning/CommunityPanel";
+import FinanceArticle from "../components/learning&community/FinanceArticle";
+import CommunityPanel from "../components/learning&community/CommunityPanel";
 
 import financeTopics from "../data/financeTopics";
 
@@ -99,7 +99,7 @@ const Learning = () => {
 
       {/* ================= MAIN ================= */}
 
-      <main className="mx-auto max-w-7xl px-6 pb-20 pt-32">
+      <main className="mx-auto max-w-7xl px-6 pb-10 pt-32">
 
         {/* ================= PAGE HEADER ================= */}
 

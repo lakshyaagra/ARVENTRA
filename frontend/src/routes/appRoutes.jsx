@@ -14,6 +14,7 @@ import Assets from "../pages/Assets";
 import Loan from "../pages/Loan"
 import Reports from "../pages/Reports"
 import ArventraAI from "../pages/ArventraAI"
+import Calculators from "../pages/Calculators";
 import AILayout from "../layouts/AILayout";
 
 
@@ -21,10 +22,12 @@ const AppRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Home/>} />
-                <Route path="/login" element={<Login/>} />
-                <Route path="/register" element={<Register/>} />
-                <Route path="/learning" element={<Learning/>}/>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/learning" element={<Learning />}/>
+                <Route path="/calculators" element={<Calculators />} />
+
                 <Route element={<ProtectedRoute />}> 
                     <Route element={<DashboardLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} /> 
@@ -35,7 +38,6 @@ const AppRoutes = () => {
                         <Route path="/assets" element={<Assets />} />
                         <Route path="/loans" element={<Loan />} />
                         <Route path="/reports" element={<Reports/>} />
-                        {/* <Route path="/ai" element={<ArventraAI />} /> */}
                     </Route>
                     <Route element={<AILayout />}>
                         <Route path="/ai" element={<ArventraAI />} />
