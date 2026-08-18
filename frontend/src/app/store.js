@@ -9,6 +9,7 @@ import assetReducer from "../features/assets/assetSlice"
 import loanReducer from "../features/loans/loanSlice"
 import reportReducer from "../features/reports/reportSlice"
 import aiReducer from "../features/ai/aiSlice"
+import notificationReducer from "../features/notifications/notificationSlice"
 
 export const store = configureStore({
     reducer: {
@@ -16,11 +17,12 @@ export const store = configureStore({
         dashboard: dashboardReducer,
         creditHealth: creditHealthReducer,
         goals: goalReducer,
-        income:incomeReducer,
-        expense:expenseReducer,
-        assets:assetReducer,
-        loan:loanReducer,
-        report:reportReducer,
-        ai:aiReducer,
+        income: incomeReducer,
+        expense: expenseReducer,
+        assets: assetReducer,
+        loan: loanReducer,
+        report: reportReducer,
+        ai: aiReducer,
+        notifications: notificationReducer,
     }
 });

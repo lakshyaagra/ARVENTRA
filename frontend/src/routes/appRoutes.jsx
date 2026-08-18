@@ -16,7 +16,7 @@ import Reports from "../pages/Reports"
 import ArventraAI from "../pages/ArventraAI"
 import Calculators from "../pages/Calculators";
 import AILayout from "../layouts/AILayout";
-
+import Notifications from "../pages/Notifications";
 
 const AppRoutes = () => {
     return (
@@ -38,6 +38,7 @@ const AppRoutes = () => {
                         <Route path="/assets" element={<Assets />} />
                         <Route path="/loans" element={<Loan />} />
                         <Route path="/reports" element={<Reports/>} />
+                        <Route path="/notifications" element={<Notifications />} />
                     </Route>
                     <Route element={<AILayout />}>
                         <Route path="/ai" element={<ArventraAI />} />

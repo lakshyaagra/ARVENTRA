@@ -72,7 +72,7 @@ const SectionCard = ({ eyebrow, title, action, children }) => (
 );
 
 const FlowStat = ({ icon: Icon, label, value, percent, tone }) => (
-  <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5">
+  <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5 transition-colors hover:border-teal-700/40">
     <div className="flex items-center gap-2 text-slate-400">
       <Icon className="h-4 w-4" aria-hidden="true" />
 
@@ -106,7 +106,7 @@ const StatBlock = ({
   accent = false,
   size = "text-2xl",
 }) => (
-  <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5">
+  <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5 transition-colors hover:border-teal-700/40">
     <p className="text-sm text-slate-400">{label}</p>
 
     <p

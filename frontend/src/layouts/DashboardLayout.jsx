@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import ARVENTRA from "../assets/ARVENTRA.png";
 import ArventraAIBubble from "../components/AI/ArventraAIBubble";
+import NotificationBell from "../components/Notifications/NotificationBell";
 
 /**
  * Brand mark + wordmark as a single clickable control.
@@ -62,7 +63,9 @@ const DashboardLayout = () => {
             <span className="hidden text-sm text-slate-500 sm:block">
               Financial Dashboard
             </span>
-            <UserMenuTrigger />
+
+            <NotificationBell />
+            
           </div>
         </div>
       </header>
