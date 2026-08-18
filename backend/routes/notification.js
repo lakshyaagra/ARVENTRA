@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
-const {getAllNotifications,markNotificationAsRead,markAllNotificationsAsRead,
+const {getAllNotifications,markNotificationAsRead,markAllNotificationsAsRead,getUnreadCount,
     deleteNotificationById,deleteAllNotifications}=require("../controllers/notificationController");
 
 
 // Get Notifications
 router.get("/",authMiddleware,getAllNotifications);
+
+// Get Unread Count (for bell badge)
+router.get("/unread-count",authMiddleware,getUnreadCount);
 
 // Mark One Notification Read
 router.patch("/:id/read",authMiddleware,markNotificationAsRead);

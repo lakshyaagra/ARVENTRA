@@ -15,6 +15,14 @@ const createGoal = async (req, res) => {
         }
 
         const goal = await Goal.create(req.body);
+
+        // Income Added Notification
+        await createNotification({
+            user: req.user.id,
+            title: "🎯 Goal Added",
+            message: `${goal.goalName} has been added.`,
+            type: "goal"
+        });
         res.status(201).json({
             message: "Goal Created",
             success: true,

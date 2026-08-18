@@ -2,13 +2,53 @@ const Notification = require("../models/Notification");
 
 const getAllNotifications = async (req, res) => {
     try {
-        const notifications = await Notification.find({ user: req.user.id }).sort({ createdAt: -1 });
+        
+        //pagination
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 15;
+        const skip = limit * (page - 1);
+
+        const filter = { user: req.user.id };
+
+        const totalNotifications = await Notification.countDocuments(filter);
+        const totalPages = Math.ceil(totalNotifications / limit);
+        const hasNextPage = page < totalPages;
+        const hasPreviousPage = page > 1;
+
+        const notifications = await Notification.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
         res.status(200).json({
             success: true,
+            currPage: page,
+            totalNotifications,
+            totalPages,
+            hasNextPage,
+            hasPreviousPage,
             notifications
         });
+
     }catch(err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+const getUnreadCount = async (req, res) => {
+    try {
+        const unreadCount = await Notification.countDocuments({
+            user: req.user.id,
+            isRead: false
+        });
+ 
+        res.status(200).json({
+            success: true,
+            unreadCount
+        });
+    } catch (err) {
         res.status(500).json({
             success: false,
             message: err.message
@@ -117,5 +157,6 @@ const deleteAllNotifications = async (req, res) => {
 
     }
 };
-module.exports={ getAllNotifications,markNotificationAsRead,
+
+module.exports={ getAllNotifications,getUnreadCount,markNotificationAsRead,
                  markAllNotificationsAsRead,deleteNotificationById,deleteAllNotifications };
