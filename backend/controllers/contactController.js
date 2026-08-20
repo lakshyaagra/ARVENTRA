@@ -2,11 +2,19 @@ const Contact = require("../models/Contact");
 
 const createContact = async (req, res) => {
     try {
-        const contact = await Contact.create({
-            user: req.user.id,
+        const payload = {
             subject: req.body.subject,
             message: req.body.message
-        });
+        };
+        // req.user is set by optionalAuth on this route.
+        if (req.user) {
+            payload.user = req.user.id;
+        } else {
+            payload.name = req.body.name;
+            payload.email = req.body.email;
+        }
+
+        const contact = await Contact.create(payload);
         res.status(201).json({
             success: true,
             message: "Contact request submitted successfully.",

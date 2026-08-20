@@ -7,13 +7,6 @@ const settingsSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    appearance: {
-        theme: {
-            type: String,
-            enum: ["light", "dark", "system"],
-            default: "system"
-        }
-    },
     notifications: {
         emiReminder: {
             type: Boolean,
@@ -28,36 +21,11 @@ const settingsSchema = new mongoose.Schema({
             default: true
         }
     },
-    financial: {
-        currency:{
-            type:String,
-            enum:["INR","USD","EUR"],
-            default:"INR"
-        },
-        salaryDay: {
-            type: Number,
-            default: 1,
-            min: 1,
-            max: 31
-        }
-    },
     ai: {
         enableAI: {
             type: Boolean,
             default: true
-        },
-        dailySummary: {
-            type: Boolean,
-            default: true
-        },
-        weeklyInsights: {
-            type: Boolean,
-            default: true
         }
-    },
-    language: {
-        type: String,
-        default: "English"
     }
 },{
     timestamps: true

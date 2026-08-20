@@ -33,19 +33,37 @@ const updateSettings = async (req, res) => {
                 user: req.user.id
             });
         }
+        if (req.body.notifications) {
+            const { emiReminder,savingsAlert,aiRecommendation } = req.body.notifications;
 
-        Object.assign(settings, req.body);
+            if (emiReminder !== undefined) {
+                settings.notifications.emiReminder =
+                    emiReminder;
+            }
+            if (savingsAlert !== undefined) {
+                settings.notifications.savingsAlert =
+                    savingsAlert;
+            }
+            if (aiRecommendation !== undefined) {
+                settings.notifications.aiRecommendation =
+                    aiRecommendation;
+            }
+        }
+        if (req.body.ai) {
+            if(req.body.ai.enableAI !== undefined){
+                settings.ai.enableAI = req.body.ai.enableAI;
+            }
+        }
         await settings.save();
-
         res.status(200).json({
             success: true,
             message: "Settings updated successfully.",
-            settings
+            settings,
         });
-    } catch (err) {
+    }catch(err){
         res.status(500).json({
             success: false,
-            message: err.message
+            message: err.message,
         });
     }
 };

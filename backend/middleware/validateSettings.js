@@ -1,37 +1,28 @@
 const validateSettings = (req, res, next) => {
 
-    const appearance = req.body.appearance;
-    const financial = req.body.financial;
-    const language = req.body.language?.trim();
-    const allowedThemes = ["light", "dark", "system"];
+    const notifications = req.body.notifications;
+    const ai = req.body.ai;
+    const allowedThemes = ["light","dark","system"];
 
-    if (appearance !== undefined) {
-        if(appearance.theme !== undefined &&
-            !allowedThemes.includes(appearance.theme)){
-            return res.status(400).json({
-                success: false,
-                message: "Invalid theme."
-            });
+    if (notifications !== undefined) {
+        const notificationKeys = ["emiReminder","savingsAlert","aiRecommendation"];
+        for (const key of notificationKeys) {
+            if (notifications[key] !== undefined && typeof notifications[key] !== "boolean"){
+                return res.status(400).json({
+                    success: false,
+                    message: `${key} must be a boolean.`
+                });
+            }
         }
     }
-    if (financial !== undefined) {
-        if (financial.salaryDay !== undefined &&
-            (Number.isNaN(Number(financial.salaryDay)) ||
-             Number(financial.salaryDay) < 1 ||
-             Number(financial.salaryDay) > 31)){
+    if (ai !== undefined){
+        if(ai.enableAI !== undefined && typeof ai.enableAI !== "boolean"){
             return res.status(400).json({
                 success: false,
-                message: "Salary day must be between 1 and 31."
+                message: "enableAI must be a boolean."
             });
         }
-    }
-    if (req.body.language !== undefined && !language){
-        return res.status(400).json({
-            success: false,
-            message: "Language cannot be empty."
-        });
     }
     next();
 };
-
 module.exports = validateSettings;
