@@ -6,17 +6,19 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Home from "../pages/Home";
 import Learning from "../pages/Learning";
-import CreditHealth from "../pages/CreditHealth"
-import Goals from '../pages/Goal'
+import CreditHealth from "../pages/CreditHealth";
+import Goals from "../pages/Goal";
 import Income from "../pages/Income";
-import Expense from "../pages/Expense"
+import Expense from "../pages/Expense";
 import Assets from "../pages/Assets";
-import Loan from "../pages/Loan"
-import Reports from "../pages/Reports"
-import ArventraAI from "../pages/ArventraAI"
+import Loan from "../pages/Loan";
+import Reports from "../pages/Reports";
+import ArventraAI from "../pages/ArventraAI";
 import Calculators from "../pages/Calculators";
 import AILayout from "../layouts/AILayout";
 import Notifications from "../pages/Notifications";
+import Settings from "../pages/Settings";
+import Contact from "../pages/Contact";
 
 const AppRoutes = () => {
     return (
@@ -25,20 +27,22 @@ const AppRoutes = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/learning" element={<Learning />}/>
+                <Route path="/learning" element={<Learning />} />
                 <Route path="/calculators" element={<Calculators />} />
+                <Route path="/contact" element={<Contact />} />
 
-                <Route element={<ProtectedRoute />}> 
+                <Route element={<ProtectedRoute />}>
                     <Route element={<DashboardLayout />}>
-                        <Route path="/dashboard" element={<Dashboard />} /> 
+                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/credit-health" element={<CreditHealth />} />
                         <Route path="/goals" element={<Goals />} />
                         <Route path="/income" element={<Income />} />
                         <Route path="/expenses" element={<Expense />} />
                         <Route path="/assets" element={<Assets />} />
                         <Route path="/loans" element={<Loan />} />
-                        <Route path="/reports" element={<Reports/>} />
+                        <Route path="/reports" element={<Reports />} />
                         <Route path="/notifications" element={<Notifications />} />
+                        <Route path="/settings" element={<Settings />} />
                     </Route>
                     <Route element={<AILayout />}>
                         <Route path="/ai" element={<ArventraAI />} />

@@ -10,6 +10,8 @@ import loanReducer from "../features/loans/loanSlice"
 import reportReducer from "../features/reports/reportSlice"
 import aiReducer from "../features/ai/aiSlice"
 import notificationReducer from "../features/notifications/notificationSlice"
+import settingsReducer from "../features/settings/settingsSlice"
+import contactReducer from "../features/contact/contactSlice"
 
 export const store = configureStore({
     reducer: {
@@ -24,5 +26,7 @@ export const store = configureStore({
         report: reportReducer,
         ai: aiReducer,
         notifications: notificationReducer,
+        settings: settingsReducer,
+        contact: contactReducer,
     }
 });
