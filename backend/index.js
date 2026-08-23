@@ -6,6 +6,8 @@ const { Server } = require("socket.io");
 const { setIO } = require("./socket/socketEmitter");
 const cors=require("cors")
 
+const {xss}=require('express-xss-sanitizer')
+
 require("./cron/savingsRateAlertCron");
 require("./cron/dailyAISmartNotificationCron");
 
@@ -20,14 +22,20 @@ setIO(io);
 emiReminderJob();
 
 app.use(express.json());
+app.use(xss());
 const connectDB=require('./config/db');
 connectDB(); 
+
+const helmet=require('helmet')
+app.use(helmet());
 
 app.use(
     cors({
         origin: "http://localhost:5173"
     })
 );
+const sanitizeInput = require("./middleware/sanitizeInput");
+app.use(sanitizeInput);
 
 const goalsRouter=require('./routes/goals');
 const usersRouter=require('./routes/users');

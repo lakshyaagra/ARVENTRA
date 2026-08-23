@@ -5,6 +5,7 @@ import {
     Target,
 } from "lucide-react";
 import ARVENTRA from "../../assets/ARVENTRA.png"
+import { useNavigate } from "react-router-dom";
 
 
 const features = [
@@ -27,6 +28,7 @@ const features = [
 ];
 
 const AuthLeftPanel = () => {
+    const navigate=useNavigate()
     return (
         <div
             className="
@@ -49,7 +51,10 @@ const AuthLeftPanel = () => {
             <div>
                 <div className="flex items-center">
                     <div>
-                        <div className="flex justify-start items-center -mb-1 gap-0">
+                        <div
+                            className="flex justify-start items-center -mb-1 gap-0 cursor-pointer"
+                            onClick={() => navigate("/")}
+                        >
                             <img src={ ARVENTRA } alt="Logo" className="h-18 w-18 cursor-pointer" />
                             <h1
                                 className="

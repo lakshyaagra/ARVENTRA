@@ -6,6 +6,7 @@ import {
   Check,
   ArrowLeft,
   AlertCircle,
+  LogOut,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,6 +14,7 @@ import {
   updateSettings,
   clearUpdateSuccess,
 } from "../features/settings/settingsSlice";
+import { logout } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
 /* =====================================================================
@@ -110,6 +112,12 @@ const Settings = () => {
     updateError,
     updateSuccess,
   } = useSelector((state) => state.settings);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    dispatch(logout());
+    navigate("/login");
+  };
 
   // Form structured directly according to Mongoose schema
   const [form, setForm] = useState({
@@ -322,31 +330,42 @@ const Settings = () => {
             </SettingRow>
           </SettingsSection>
 
+          {/* ACCOUNT */}
+          <SettingsSection
+            icon={LogOut}
+            eyebrow="Account"
+            title="Session"
+            description="Sign out of ARVENTRA on this device."
+          >
+            <SettingRow
+              label="Log out"
+              description="You'll need to sign in again to access your account."
+              last
+            >
+              <button
+                type="button"
+                onClick={handleLogout}
+                className=" flex items-center gap-2 rounded-lg border border-red-900/40
+                bg-red-950/20 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors
+                hover:border-red-800/60 hover:bg-red-950/30 focus:outline-none
+                focus-visible:ring-2 focus-visible:ring-red-500/40"
+              >
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                Log out
+              </button>
+            </SettingRow>
+          </SettingsSection>
+
           {/* SAVE BUTTON */}
           <div className="flex justify-end pt-2">
             <button
               type="button"
               onClick={handleSave}
               disabled={updating}
-              className="
-                flex
-                items-center
-                gap-2
-                rounded-lg
-                bg-teal-500
-                px-6
-                py-3
-                text-sm
-                font-semibold
-                text-[#0E1514]
-                transition-colors
-                hover:bg-teal-400
-                focus:outline-none
-                focus-visible:ring-2
-                focus-visible:ring-teal-500/60
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
+              className=" flex items-center gap-2 rounded-lg bg-teal-500 px-6 py-3
+              text-sm font-semibold text-[#0E1514] transition-colors hover:bg-teal-400
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 
+              disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Save className="h-4 w-4" aria-hidden="true" />
               {updating ? "Saving..." : "Save changes"}

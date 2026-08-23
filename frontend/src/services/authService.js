@@ -14,3 +14,23 @@ export const getCurrentUser = async () => {
     const response = await api.get("/users/me"); 
     return response.data; 
 };
+
+export const forgotPassword = async (email) => {
+    const response = await api.post("/users/forgot-password", { email });
+    return response.data;
+};
+
+export const resetPassword = async (token, password) => {
+    const response = await api.post(`/users/reset-password/${token}`, { password });
+    return response.data;
+};
+
+export const verifyEmail = async (token) => {
+    const response = await api.post(`/users/verify-email/${token}`);
+    return response.data;
+};
+
+export const resendVerification = async (email) => {
+    const response = await api.post("/users/resend-verification", { email });
+    return response.data;
+};

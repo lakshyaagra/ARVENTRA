@@ -4,17 +4,20 @@ import ARVENTRA from "../assets/ARVENTRA.png"
 
 import FinanceArticle from "../components/learning&community/FinanceArticle";
 import CommunityPanel from "../components/learning&community/CommunityPanel";
-
 import financeTopics from "../data/financeTopics";
+import useAuth from "../hooks/authHook";
 
 const Learning = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
 
   const [search, setSearch] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const selectedTopicId = searchParams.get("topic") || "mutual-funds";
+  const goToAppOr = (destination) => navigate(isAuthenticated ? "/dashboard" : destination);
+
 
   const selectedTopic = useMemo(
     () =>
@@ -68,27 +71,51 @@ const Learning = () => {
           </div>
 
           <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
-
+             <button
+                  onClick={() => navigate("/learn")}
+                  className="text-teal-400"
+                  >
+                  Learn
+              </button>
             <button
-              onClick={() => navigate("/learning")}
-              className="text-teal-400"
+                onClick={() => navigate("/")}
+                className="transition hover:text-white"
             >
-              Learn
+                Home
+            </button>
+            <button
+                onClick={() => navigate("/calculators")}
+                className="transition hover:text-white"
+            >
+                Calculators
+            </button>
+            <button
+                onClick={() => navigate("/contact")}
+                className="transition hover:text-white"
+            >
+                Contact
             </button>
 
-            <button
-              onClick={() => navigate("/login")}
-              className="transition hover:text-white"
-            >
-              Sign in
-            </button>
-
-            <button
-              onClick={() => navigate("/register")}
-              className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
-            >
-              Create account
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <button onClick={() => navigate("/login")} className="transition hover:text-white">
+                  Sign in
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                >
+                  Create account
+                </button>
+              </>
+            )}
 
           </nav>
 

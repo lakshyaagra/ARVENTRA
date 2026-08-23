@@ -200,8 +200,14 @@ const Contact = () => {
                         <button
                             onClick={() => navigate("/contact")}
                             className="text-teal-400"
-                        >
+                            >
                             Contact
+                        </button>
+                        <button
+                            onClick={() => navigate("/")}
+                            className="transition hover:text-white"
+                        >
+                            Home
                         </button>
 
                         {isAuthenticated ? (
@@ -401,8 +407,8 @@ const Contact = () => {
                             eyebrow="Support"
                             title="What happens next?"
                         >
-                            <div className="space-y-5">
-                                <div className="flex gap-3">
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3">
                                     <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" />
                                     <p className="text-sm leading-6 text-slate-500">
                                         {isAuthenticated
@@ -410,7 +416,7 @@ const Contact = () => {
                                             : "We'll get back to you at the email address you provide."}
                                     </p>
                                 </div>
-                                <div className="flex gap-3">
+                                <div className="flex items-center gap-3">
                                     <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" />
                                     <p className="text-sm leading-6 text-slate-500">
                                         {isAuthenticated
@@ -418,7 +424,7 @@ const Contact = () => {
                                             : "Sign in to keep track of your submitted requests from this page."}
                                     </p>
                                 </div>
-                                <div className="flex gap-3">
+                                <div className="flex items-center gap-3">
                                     <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" />
                                     <p className="text-sm leading-6 text-slate-500">
                                         Requests remain marked as pending until they are resolved.
@@ -491,17 +497,6 @@ const Contact = () => {
                                                             )}
                                                         </p>
                                                     </div>
-                                                    <span
-                                                        className={"shrink-0 rounded-full border px-2.5 py-1 text-[11px] " + (
-                                                            contact.status === "resolved"
-                                                                ? "border-teal-900/50 bg-teal-950/30 text-teal-400"
-                                                                : "border-amber-900/40 bg-amber-950/20 text-amber-400"
-                                                        )}
-                                                    >
-                                                        {contact.status === "resolved"
-                                                            ? "Resolved"
-                                                            : "Pending"}
-                                                    </span>
                                                 </div>
                                                 <p className="mt-4 text-sm leading-6 text-slate-500">
                                                     {contact.message}
@@ -515,7 +510,8 @@ const Contact = () => {
                                                                 contact._id
                                                             )
                                                         }
-                                                        className="flex items-center gap-1.5 text-xs text-slate-600 transition-colors hover:text-red-400 disabled:opacity-50"
+                                                        className="flex items-center gap-1.5 text-xs text-slate-600
+                                                        transition-colors hover:text-red-400 disabled:opacity-50"
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                         Delete

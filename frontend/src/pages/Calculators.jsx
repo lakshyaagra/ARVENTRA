@@ -14,7 +14,7 @@ import CalculatorForm from "../components/Calculator/CalculatorForm";
 import CalculatorResult from "../components/Calculator/CalculatorResult";
 import calculatorService from "../services/calculatorService";
 import { calculatorGroups, calculators } from "../config/calculatorConfig";
-
+import useAuth from "../hooks/authHook";
 /* Map icons directly in case they are missing from group objects */
 const ICON_MAP = {
   investments: TrendingUp,
@@ -30,11 +30,14 @@ const ICON_MAP = {
 
 const Calculators = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [selectedCalculator, setSelectedCalculator] = useState(null);
   const [values, setValues] = useState({});
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const goToAppOr = (destination) => navigate(isAuthenticated ? "/dashboard" : destination);
 
   const handleSelectCalculator = (calculator) => {
     setSelectedCalculator(calculator);
@@ -125,31 +128,44 @@ const Calculators = () => {
             </button>
 
             <button
+              onClick={() => navigate("/")}
+              className="transition hover:text-white"
+            >
+              Home
+            </button>
+            <button
               onClick={() => navigate("/learning")}
               className="transition hover:text-white"
             >
               Learn
             </button>
             <button
-              onClick={() => navigate("/learning")}
+              onClick={() => navigate("/contact")}
               className="transition hover:text-white"
             >
-              Community
+              Contact
             </button>
 
-            <button
-              onClick={() => navigate("/login")}
-              className="transition hover:text-white"
-            >
-              Sign in
-            </button>
-
-            <button
-              onClick={() => navigate("/register")}
-              className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
-            >
-              Create account
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <button onClick={() => navigate("/login")} className="transition hover:text-white">
+                  Sign in
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                >
+                  Create account
+                </button>
+              </>
+            )}
           </nav>
         </div>
       </header>

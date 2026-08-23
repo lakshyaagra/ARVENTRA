@@ -4,10 +4,13 @@ const Button = ({
     children,
     type = "submit",
     loading = false,
+    loadingText = "Signing In...",
+    onClick,
 }) => {
     return (
         <button
             type={type}
+            onClick={onClick}
             disabled={loading}
             className="group w-full h-14 rounded-xl bg-linear-to-r from-teal-600
             to-emerald-500 text-white font-semibold flex items-center justify-center 
@@ -15,7 +18,7 @@ const Button = ({
             disabled:opacity-50 disabled:cursor-not-allowed">
             {
                 loading
-                    ? "Signing In..."
+                    ? loadingText
                     : (
                         <>
                             {children}
