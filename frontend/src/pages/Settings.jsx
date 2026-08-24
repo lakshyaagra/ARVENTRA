@@ -15,6 +15,8 @@ import {
   clearUpdateSuccess,
 } from "../features/settings/settingsSlice";
 import { logout } from "../features/auth/authSlice";
+import { logout as logoutRequest } from "../services/authService";
+import { setAccessToken } from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 /* =====================================================================
@@ -113,8 +115,16 @@ const Settings = () => {
     updateSuccess,
   } = useSelector((state) => state.settings);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try {
+      // Best-effort: also revoke the refresh token server-side so the
+      // session is actually dead, not just forgotten locally. If this
+      // fails (e.g. already expired), still proceed to clear local state.
+      await logoutRequest();
+    } catch {
+      // Nothing more to do — local state gets cleared below regardless.
+    }
+    setAccessToken(null);
     dispatch(logout());
     navigate("/login");
   };
@@ -185,11 +195,7 @@ const Settings = () => {
       },
     }));
   };
-
-  /* ================================================================
-     SAVE
-     ================================================================ */
-
+  
   const handleSave = () => {
     dispatch(updateSettings(form));
   };
@@ -207,11 +213,9 @@ const Settings = () => {
                   Back to dashboard
                 </button>
         <Eyebrow>Settings</Eyebrow>
-
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-100 md:text-4xl">
           Manage your preferences
         </h1>
-
         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-400">
           Control how ARVENTRA sends notifications and manages AI features for your workspace.
         </p>
@@ -279,7 +283,6 @@ const Settings = () => {
                 label="EMI reminders"
               />
             </SettingRow>
-
             <SettingRow
               label="Savings alerts"
               description="Receive alerts when your savings situation needs attention."
@@ -292,7 +295,6 @@ const Settings = () => {
                 label="Savings alerts"
               />
             </SettingRow>
-
             <SettingRow
               label="AI recommendations"
               description="Allow ARVENTRA to notify you about relevant financial recommendations."
@@ -345,10 +347,10 @@ const Settings = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className=" flex items-center gap-2 rounded-lg border border-red-900/40
-                bg-red-950/20 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors
-                hover:border-red-800/60 hover:bg-red-950/30 focus:outline-none
-                focus-visible:ring-2 focus-visible:ring-red-500/40"
+                className="flex items-center gap-2 rounded-lg border border-red-900/40
+                        bg-red-950/20 px-4 py-2.5 text-sm font-medium text-red-400
+                        transition-colors hover:border-red-800/60 hover:bg-red-950/30 
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40"
               >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Log out
@@ -362,10 +364,9 @@ const Settings = () => {
               type="button"
               onClick={handleSave}
               disabled={updating}
-              className=" flex items-center gap-2 rounded-lg bg-teal-500 px-6 py-3
-              text-sm font-semibold text-[#0E1514] transition-colors hover:bg-teal-400
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 
-              disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-teal-500 px-6 py-3 text-sm font-semibold
+              text-[#0E1514] transition-colors hover:bg-teal-400 focus:outline-none focus-visible:ring-2 
+              focus-visible:ring-teal-500/60 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Save className="h-4 w-4" aria-hidden="true" />
               {updating ? "Saving..." : "Save changes"}

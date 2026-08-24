@@ -5,6 +5,7 @@ const Income = require("../models/Income");
 const Expense = require("../models/Expense");
 
 const { createNotification } = require("../services/notificationService");
+const { getUserSettings } = require('../utils/settingsGate')
 
 cron.schedule("0 8 * * *", async () => {
     try {
@@ -89,6 +90,12 @@ cron.schedule("0 8 * * *", async () => {
                 user.lastSavingsAlertLevel === level){
                 continue;
             }
+
+            const settings = await getUserSettings(user._id);
+            if (settings && settings.notifications?.savingsAlert === false) {
+                continue;
+            }
+
             await createNotification({
                 user: user._id,
                 title,

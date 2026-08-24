@@ -4,6 +4,7 @@ const Goal = require("../models/Goal");
 const Loan = require("../models/Loan");
 const Asset = require("../models/Assets");
 const AIConversation = require("../models/AIConversation");
+const { getUserSettings } = require("../utils/settingsGate");
 
 const financialAnalyzer = require("../services/financialAnalyzer");
 const promptBuilder = require("../services/promptBuilder");
@@ -30,6 +31,13 @@ const chatWithAI = async (req,res)=>{
             return res.status(400).json({
                 success:false,
                 message:"Message is required"
+            });
+        }
+        const settings = await getUserSettings(req.user.id);
+        if (settings && settings.ai?.enableAI === false) {
+            return res.status(403).json({
+                success: false,
+                message: "AI features are turned off in your settings. Enable them under Settings to use Arventra AI."
             });
         }
 

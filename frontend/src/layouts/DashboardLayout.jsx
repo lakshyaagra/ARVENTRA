@@ -28,6 +28,7 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state) => state.auth);
+  const { settings } = useSelector((state) => state.settings);
 
   const [resendState, setResendState] = useState("idle"); // idle | sending | sent
 
@@ -45,6 +46,7 @@ const DashboardLayout = () => {
 
   // Check if current route is /settings
   const isSettingsPage = location.pathname === "/settings";
+  const isAIEnabled = settings?.ai?.enableAI !== false;
 
   return (
     <div className="min-h-screen bg-[#0B0F0E] text-slate-100">
@@ -125,7 +127,7 @@ const DashboardLayout = () => {
       </main>
 
       {/* Show AI Bubble everywhere EXCEPT /settings */}
-      {!isSettingsPage && <ArventraAIBubble />}
+      {!isSettingsPage&& isAIEnabled && <ArventraAIBubble />}
     </div>
   );
 };

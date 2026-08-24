@@ -11,6 +11,7 @@ const financialAnalyzer = require("../services/financialAnalyzer");
 const aiNotificationPromptBuilder = require("../services/aiNotificationPromptBuilder");
 const aiService = require("../services/aiService");
 const { createNotification } = require("../services/notificationService");
+const { getUserSettings } = require('../utils/settingsGate')
 
 cron.schedule("30 9 * * *", async () => {
     try {
@@ -21,6 +22,15 @@ cron.schedule("30 9 * * *", async () => {
             if (user.lastAINotificationDate === today) {
                 continue;
             }
+
+            const settings = await getUserSettings(user._id);
+            if (settings && settings.notifications?.aiRecommendation === false) {
+                // Skip the AI call entirely for this user, not just the
+                // notification — no point spending on a generation that
+                // would just get discarded.
+                continue;
+            }
+
             const [income, expenses, goals, loans, assets] =
                 await Promise.all([
                     Income.find({ user: user._id }),

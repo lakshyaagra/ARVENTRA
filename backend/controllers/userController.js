@@ -1,13 +1,23 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/User');
-const jwt=require('jsonwebtoken');
 const sendEmail = require('../utils/sendMail');
 
 // Ye email verification aur password reset ke liye random secret token banane/hash karne ke kaam aa rahe hain
-const { generateToken, hashToken } = require('../utils/token');
+const {
+    signAccessToken,
+    generateRefreshToken,
+    hashRefreshToken,
+    refreshCookieOptions,
+    REFRESH_COOKIE_NAME
+} = require('../utils/tokens');
 
 const EMAIL_VERIFICATION_MS = 24 * 60 * 60 * 1000; // Verification link 24 hours tak valid hai.
 const PASSWORD_RESET_MS = 30 * 60 * 1000; // Password reset link sirf 30 minutes valid hai.
+
+// Strips any trailing slash(es) from FRONTEND_URL before we append a path —
+// otherwise "http://host/" + "/reset-password/..." becomes a double-slash
+// URL that the frontend router won't match against "/reset-password/:token".
+const frontendBaseUrl = () => (process.env.FRONTEND_URL || "").replace(/\/+$/, "");
 
 
 const registerUser=async (req,res)=>{
@@ -82,16 +92,20 @@ const loginUser=async (req,res)=>{
                 success: false
             })
         }
-        //JWT WILL BE GENERATED AND SENT TO THE USER AS TOKEN AFTER SUCCESSFULLY BEING LOGIN
-        const token=jwt.sign(
-            {id:user._id},
-            process.env.JWT_SECRET,
-            { expiresIn: "7d"}
-        )
+
+        //ek access token bnalo
+        const accessToken = signAccessToken(user._id);
+ 
+        const { rawToken, hashedToken } = generateRefreshToken();
+        user.refreshTokenHash = hashedToken;
+        await user.save();
+ 
+        res.cookie(REFRESH_COOKIE_NAME, rawToken, refreshCookieOptions());
+ 
         res.status(200).json({
             message: "User Logged In",
             success: true,
-            token: token
+            token: accessToken
         })
     }
     catch(err){
@@ -101,6 +115,77 @@ const loginUser=async (req,res)=>{
         })
     }
 }
+
+// REFRESH / LOGOUT
+const refreshAccessToken = async (req, res) => {
+    try {
+        const rawToken = req.cookies?.[REFRESH_COOKIE_NAME];
+        if (!rawToken) {
+            return res.status(401).json({
+                success: false,
+                message: "No refresh token provided."
+            });
+        }
+ 
+        const hashedToken = hashRefreshToken(rawToken);
+        const user = await User.findOne({ refreshTokenHash: hashedToken });
+ 
+        if (!user) {
+            // Either never logged in, already logged out, or (notably) a
+            // stale/stolen refresh token being replayed after rotation —
+            // clear whatever cookie the caller has either way.
+            res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieOptions());
+            return res.status(401).json({
+                success: false,
+                message: "Session expired. Please log in again."
+            });
+        }
+ 
+        // Rotate: issue a new refresh token and invalidate this one, so a
+        // captured-then-replayed old token can't be reused going forward.
+        const { rawToken: newRawToken, hashedToken: newHashedToken } = generateRefreshToken();
+        user.refreshTokenHash = newHashedToken;
+        await user.save();
+ 
+        res.cookie(REFRESH_COOKIE_NAME, newRawToken, refreshCookieOptions());
+ 
+        const accessToken = signAccessToken(user._id);
+ 
+        res.status(200).json({
+            success: true,
+            token: accessToken
+        });
+    } catch (err) {
+        console.error("REFRESH TOKEN ERROR:", err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+ 
+const logoutUser = async (req, res) => {
+    try {
+        const rawToken = req.cookies?.[REFRESH_COOKIE_NAME];
+ 
+        if (rawToken) {
+            const hashedToken = hashRefreshToken(rawToken);
+            // Best-effort: if it doesn't match any user (already expired/
+            // rotated/logged out elsewhere), there's nothing left to revoke.
+            await User.updateOne(
+                { refreshTokenHash: hashedToken },
+                { $unset: { refreshTokenHash: 1 } }
+            );
+        }
+ 
+        res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieOptions());
+ 
+        res.status(200).json({
+            success: true,
+            message: "Logged out."
+        });
+    } catch (err) {
+        console.error("LOGOUT ERROR:", err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
 const getCurrentUser = async (req, res) => { 
     try { 
         const user = await User.findById(req.user.id); 
@@ -123,16 +208,14 @@ const getCurrentUser = async (req, res) => {
         } 
 };
 
-// ============================================================
 // EMAIL SEND FOR VERIFICATION
-// ============================================================
 const sendVerificationEmailFor = async (user) => {
     const { rawToken, hashedToken } = generateToken();
     user.emailVerificationToken = hashedToken;
     user.emailVerificationExpires = new Date(Date.now() + EMAIL_VERIFICATION_MS);
     await user.save();
 
-    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email/${rawToken}`;
+    const verifyUrl = `${frontendBaseUrl()}/verify-email/${rawToken}`;
     // User email mein ye link click karega.
 
     await sendEmail({
@@ -144,9 +227,8 @@ const sendVerificationEmailFor = async (user) => {
         <p>If you didn't create this account, you can ignore this email.</p>`
     });
 };
-// ============================================================
+
 //  IMPORTANT :- REAL EMAIL VERIFICATION
-// ============================================================
 const verifyEmail = async (req, res) => {
     try {
         // User clicked:      /verify-email/abc123xyz    Token comes from:req.params.token
@@ -203,10 +285,6 @@ const resendVerification = async (req, res) => {
         });
     }
 };
-
-// ============================================================
-// FORGOT / RESET PASSWORD
-// ============================================================
 const forgotPassword = async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
@@ -294,7 +372,7 @@ const resetPassword = async (req, res) => {
 };
 
 module.exports={
-    registerUser, loginUser, getCurrentUser,
-    verifyEmail, resendVerification,
+    registerUser, loginUser, getCurrentUser,refreshAccessToken,
+    logoutUser,verifyEmail, resendVerification,
     forgotPassword, resetPassword
 }

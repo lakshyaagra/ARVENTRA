@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 const Loan = require("../models/Loan");
 const { createNotification } = require("../services/notificationService");
+const { getUserSettings } = require("../utils/settingsGate")
 
 const emiReminderJob=()=>{
     cron.schedule("0 8 * * *", async () => {
@@ -18,6 +19,11 @@ const emiReminderJob=()=>{
         });
 
         for (const loan of loans) {
+            const settings = await getUserSettings(loan.user);
+            if (settings && settings.notifications?.emiReminder === false) {
+                continue;
+            }
+
             await createNotification({
                 user: loan.user,
                 title: "💳 EMI Reminder",

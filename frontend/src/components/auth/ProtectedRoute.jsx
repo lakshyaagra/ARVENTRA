@@ -10,7 +10,15 @@ const ProtectedRoute = () => {
     // authenticated.
     useNotificationSocket();
 
-    const { isAuthenticated } = useAuth(); 
+    const { isAuthenticated, initializing } = useAuth(); 
+
+    // The very first render after a hard refresh, we don't yet know if
+    // there's a valid session — AuthInitializer is still attempting a
+    // silent refresh against the httpOnly cookie. Redirecting before that
+    // resolves would boot out a genuinely logged-in user on every reload.
+    if (initializing) {
+        return null;
+    }
     if (!isAuthenticated) { 
         return <Navigate to="/login" replace />; 
     }

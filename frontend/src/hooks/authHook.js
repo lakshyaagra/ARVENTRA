@@ -8,6 +8,7 @@ const useAuth = () => {
         token: auth.token,
         isAuthenticated: auth.isAuthenticated,
         loading: auth.loading,
+        initializing: auth.initializing,
     };
 };
 

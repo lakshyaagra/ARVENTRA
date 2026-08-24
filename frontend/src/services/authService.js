@@ -34,3 +34,13 @@ export const resendVerification = async (email) => {
     const response = await api.post("/users/resend-verification", { email });
     return response.data;
 };
+
+export const logout = async(data)=>{
+    const response = await api.post("/users/logout", data);
+    return response.data;
+};
+
+export const refreshAccessToken = async(data)=>{
+    const response = await api.post("/users/refresh-token");
+    return response.data;
+};

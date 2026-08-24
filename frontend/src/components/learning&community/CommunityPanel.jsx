@@ -1,5 +1,6 @@
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { getAccessToken } from "../../api/axios";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -58,7 +59,9 @@ const CommunityPanel = () => {
    */
 
   const getToken = () => {
-    return localStorage.getItem("token");
+    // The access token now lives in memory only (see api/axios.js) —
+    // there's nothing in localStorage to read anymore.
+    return getAccessToken();
   };
   const isLoggedIn = Boolean(getToken());
 
@@ -75,29 +78,10 @@ const CommunityPanel = () => {
     };
   };
 
-  const getCurrentUserId = () => {
-    const token = getToken();
-
-    if (!token) return null;
-
-    try {
-      const decoded = jwtDecode(token);
-
-      return (
-        decoded.id ||
-        decoded._id ||
-        decoded.userId ||
-        decoded.user?.id ||
-        decoded.user?._id ||
-        null
-      );
-    } catch (error) {
-      console.error("Invalid token:", error);
-      return null;
-    }
-  };
-
-  const currentUserId = getCurrentUserId();
+  // Pulled from Redux instead of decoding the JWT client-side — simpler,
+  // and avoids re-decoding a token that now rotates every 15 minutes.
+  const { user } = useSelector((state) => state.auth);
+  const currentUserId = user?._id || user?.id || null;
 
   /*
    * =====================================================

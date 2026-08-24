@@ -1,7 +1,7 @@
 const express=require('express');
 const router=express.Router();
 
-const { registerUser, loginUser, getCurrentUser,verifyEmail, 
+const { registerUser, loginUser, getCurrentUser,refreshAccessToken, logoutUser,verifyEmail, 
         resendVerification,forgotPassword, resetPassword }= require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 const validateRegister = require('../middleware/validateRegister');
@@ -13,6 +13,9 @@ const { loginLimiter, registerLimiter, forgotPasswordLimiter } = require('../uti
 router.post('/register',registerLimiter,validateRegister,registerUser);
 router.post('/login',loginLimiter,validateLogin,loginUser);
 router.get('/me',authMiddleware,getCurrentUser);
+
+router.post('/refresh-token',refreshAccessToken);
+router.post('/logout',logoutUser);
 
 router.post('/verify-email/:token',verifyEmail);
 router.post('/resend-verification',forgotPasswordLimiter,validateEmailOnly,resendVerification);

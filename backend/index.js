@@ -5,6 +5,7 @@ const { initializeSocket } = require("./socket/socket")
 const { Server } = require("socket.io");
 const { setIO } = require("./socket/socketEmitter");
 const cors=require("cors")
+const cookieParser = require("cookie-parser");
 
 const {xss}=require('express-xss-sanitizer')
 
@@ -14,7 +15,12 @@ require("./cron/dailyAISmartNotificationCron");
 const express = require("express");
 const app = express();
 const server=http.createServer(app);
-const io=new Server(server);
+const io=new Server(server,{
+  cors: {
+    origin: "http://localhost:5173", // Allow your frontend origin
+    methods: ["GET", "POST"]
+  }
+});
 
 initializeSocket(io);
 setIO(io);
@@ -31,9 +37,12 @@ app.use(helmet());
 
 app.use(
     cors({
-        origin: "http://localhost:5173"
+        origin: "http://localhost:5173",
+        credentials: true
     })
 );
+app.use(cookieParser());
+
 const sanitizeInput = require("./middleware/sanitizeInput");
 app.use(sanitizeInput);
 

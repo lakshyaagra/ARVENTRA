@@ -2,9 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     user: null,
-    token: localStorage.getItem("token"),
-    isAuthenticated: !!localStorage.getItem("token"),
-    loading: false
+    token: null,
+    isAuthenticated: false,
+    loading: false,
+
+    // True until the app's initial silent-refresh attempt (AuthInitializer)
+    // completes. Routes that gate on isAuthenticated should wait for this
+    // to go false first, or a real logged-in user gets bounced to /login
+    // on every hard refresh before the silent refresh has had a chance to run.
+    initializing: true
 };
 
 const authSlice = createSlice({
@@ -37,6 +43,7 @@ const authSlice = createSlice({
             state.token = null;
             state.isAuthenticated = false;
             state.loading=false;
+            state.initializing = false;
         }
     }
 });
