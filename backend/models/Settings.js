@@ -26,6 +26,12 @@ const settingsSchema = new mongoose.Schema({
             type: Boolean,
             default: true
         }
+    },
+    appearance: {
+        reduceMotion: {
+            type: Boolean,
+            default: false
+        }
     }
 },{
     timestamps: true

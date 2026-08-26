@@ -8,6 +8,11 @@ const api = axios.create({
     withCredentials: true,
 });
 
+const getCsrfCookie = () => {
+    const match = document.cookie.match(/(?:^|;\s*)csrfToken=([^;]+)/);
+    return match ? match[1] : null;
+};
+
 // The access token lives here — in memory only, NOT localStorage — so it
 // disappears on a hard refresh by design. authSlice/AuthInitializer are
 // what re-populate it (via a silent refresh against the httpOnly cookie)
@@ -30,6 +35,15 @@ api.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
+    // Echoed back on every request; the backend only actually checks it
+    // on the two cookie-authenticated endpoints (refresh-token, logout) —
+    // harmless to send it everywhere else too.
+    const csrfToken = getCsrfCookie();
+    if (csrfToken) {
+        config.headers = config.headers || {};
+        config.headers["x-csrf-token"] = csrfToken;
+    }
+
     return config;
 },
     (error) => Promise.reject(error)
@@ -50,7 +64,20 @@ const requestNewAccessToken = () => {
             .post(
                 `${import.meta.env.VITE_API_URL}/users/refresh-token`,
                 {},
-                { withCredentials: true }
+                { 
+                    withCredentials: true,
+                    // Bypasses the `api` instance (and its interceptor) on
+                    // purpose to avoid recursion, so the CSRF header has to
+                    // be attached explicitly here too. On a visitor's very
+                    // first-ever request there's no CSRF cookie yet — that
+                    // case already fails for the equally-valid reason of
+                    // having no refresh-token cookie either, so omitting
+                    // the header entirely here (rather than sending the
+                    // literal string "null") changes nothing observable.
+                    headers: getCsrfCookie()
+                        ? { "x-csrf-token": getCsrfCookie() }
+                        : {},
+                 }
             )
             .then((response) => {
                 const newToken = response.data.token;

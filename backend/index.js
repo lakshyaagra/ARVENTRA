@@ -43,6 +43,9 @@ app.use(
 );
 app.use(cookieParser());
 
+const {issueCsrfToken} = require('./middleware/csrf')
+app.use(issueCsrfToken);
+
 const sanitizeInput = require("./middleware/sanitizeInput");
 app.use(sanitizeInput);
 

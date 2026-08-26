@@ -2,7 +2,6 @@ const validateSettings = (req, res, next) => {
 
     const notifications = req.body.notifications;
     const ai = req.body.ai;
-    const allowedThemes = ["light","dark","system"];
 
     if (notifications !== undefined) {
         const notificationKeys = ["emiReminder","savingsAlert","aiRecommendation"];
@@ -20,6 +19,15 @@ const validateSettings = (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: "enableAI must be a boolean."
+            });
+        }
+    }
+    const appearance = req.body.appearance;
+    if (appearance !== undefined) {
+        if (appearance.reduceMotion !== undefined && typeof appearance.reduceMotion !== "boolean") {
+            return res.status(400).json({
+                success: false,
+                message: "reduceMotion must be a boolean."
             });
         }
     }

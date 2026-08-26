@@ -54,6 +54,11 @@ const updateSettings = async (req, res) => {
                 settings.ai.enableAI = req.body.ai.enableAI;
             }
         }
+        if (req.body.appearance) {
+            if (req.body.appearance.reduceMotion !== undefined) {
+                settings.appearance.reduceMotion = req.body.appearance.reduceMotion;
+            }
+        }
         await settings.save();
         res.status(200).json({
             success: true,

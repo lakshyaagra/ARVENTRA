@@ -8,14 +8,15 @@ const validateRegister = require('../middleware/validateRegister');
 const validateLogin = require('../middleware/validateLogin');
 const validateEmailOnly = require('../middleware/validateEmailOnly');
 const validateResetPassword = require('../middleware/validateResetPassword');
+const { verifyCsrfToken } = require('../middleware/csrf')
 const { loginLimiter, registerLimiter, forgotPasswordLimiter } = require('../utils/rateLimiters');
 
 router.post('/register',registerLimiter,validateRegister,registerUser);
 router.post('/login',loginLimiter,validateLogin,loginUser);
 router.get('/me',authMiddleware,getCurrentUser);
 
-router.post('/refresh-token',refreshAccessToken);
-router.post('/logout',logoutUser);
+router.post('/refresh-token',verifyCsrfToken,refreshAccessToken);
+router.post('/logout',verifyCsrfToken,logoutUser);
 
 router.post('/verify-email/:token',verifyEmail);
 router.post('/resend-verification',forgotPasswordLimiter,validateEmailOnly,resendVerification);
