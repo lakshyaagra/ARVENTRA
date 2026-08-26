@@ -1,7 +1,3 @@
-Absolutely. I'll keep the README focused on **what Arventra is, its features, architecture, tech stack, and high-level status**, without exposing the detailed development roadmap or testing work.
-
-I’d also make the tech stack more professional and complete without adding technologies that you haven't mentioned as actually being used.
-
 # 🚀 ARVENTRA
 
 > An AI-Powered Financial Operating System built to help users track finances, achieve goals, improve financial health, and receive intelligent AI-driven financial insights.
