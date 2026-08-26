@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   AlertCircle,
   LogOut,
+  Wand2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -139,6 +140,9 @@ const Settings = () => {
     ai: {
       enableAI: true,
     },
+    appearance: {
+      reduceMotion: false,
+    },
   });
 
   /* ================================================================
@@ -164,6 +168,9 @@ const Settings = () => {
       },
       ai: {
         enableAI: settings.ai?.enableAI ?? true,
+      },
+      appearance: {
+        reduceMotion: settings.appearance?.reduceMotion ?? false,
       },
     });
   }, [settings]);
@@ -328,6 +335,28 @@ const Settings = () => {
                   updateNestedField("ai", "enableAI", value)
                 }
                 label="Enable AI"
+              />
+            </SettingRow>
+          </SettingsSection>
+
+          {/* APPEARANCE */}
+          <SettingsSection
+            icon={Wand2}
+            eyebrow="Appearance"
+            title="Motion & effects"
+            description="Control decorative animations across ARVENTRA, including the cursor-reactive background."
+          >
+            <SettingRow
+              label="Reduce motion"
+              description="Turns off the cursor-reactive background grid and other decorative animations."
+              last
+            >
+              <Toggle
+                checked={form.appearance.reduceMotion}
+                onChange={(value) =>
+                  updateNestedField("appearance", "reduceMotion", value)
+                }
+                label="Reduce motion"
               />
             </SettingRow>
           </SettingsSection>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   Plus,
   Search,
@@ -768,8 +769,10 @@ const Expense = () => {
             expenseData: payload,
           }),
         ).unwrap();
+        toast.success("Expense entry updated.");
       } else {
         await dispatch(createExpense(payload)).unwrap();
+        toast.success("Expense entry added.");
       }
 
       closeForm();
@@ -778,7 +781,9 @@ const Expense = () => {
         page: pagination.currPage || 1,
       });
     } catch (error) {
-      // Redux handles the error.
+      toast.error(
+        typeof error === "string" ? error : "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -822,6 +827,8 @@ const Expense = () => {
 
       setDeleteTarget(null);
 
+      toast.success("Expense entry deleted.");
+
       const currentPage = pagination.currPage || 1;
 
       const shouldGoBack = expenses.length === 1 && currentPage > 1;
@@ -830,7 +837,9 @@ const Expense = () => {
         page: shouldGoBack ? currentPage - 1 : currentPage,
       });
     } catch (error) {
-      // Redux handles the error.
+      toast.error(
+        typeof error === "string" ? error : "Failed to delete expense entry. Please try again."
+      );
     }
   };
 

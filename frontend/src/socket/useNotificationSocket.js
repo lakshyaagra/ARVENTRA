@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { connectSocket, disconnectSocket } from "../socket/socketClient";
 import { notificationReceived } from "../features/notifications/notificationSlice";
  
@@ -20,6 +21,16 @@ const useNotificationSocket = () => {
  
         socket.on("newNotification", (notification) => {
             dispatch(notificationReceived(notification));
+
+            // Surfaced immediately as a toast too, not just added to the
+            // bell dropdown — a real-time push is easy to miss otherwise
+            // if the user isn't currently looking at the bell.
+            // Plain string, not JSX: this file is .js, not .jsx, and the
+            // project's Vite config has no JSX loader override for .js.
+            toast(`${notification.title}\n${notification.message}`, {
+                icon: "🔔",
+                duration: 5000,
+            });
         });
  
         return () => {

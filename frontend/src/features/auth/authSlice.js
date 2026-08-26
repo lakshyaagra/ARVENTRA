@@ -26,6 +26,7 @@ const authSlice = createSlice({
 
         loginSuccess(state, action){
             state.loading = false;
+            state.initializing = false;
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.isAuthenticated = true;
@@ -33,6 +34,7 @@ const authSlice = createSlice({
 
         loginFailure(state){
             state.loading = false;
+            state.initializing = false;
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;

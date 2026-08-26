@@ -1,0 +1,25 @@
+.cursor-grid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cursor-grid__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Global site-background usage (see App.jsx): fixed full-viewport layer,
+   click-through so it never blocks the real UI, and positioned above
+   ordinary page content since every page has its own solid opaque
+   background color — mounting it behind would make it invisible. Sits
+   below dropdowns/modals/headers (highest z-index elsewhere in the app
+   is z-100) so it never visually interferes with them. */
+.app-cursor-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}

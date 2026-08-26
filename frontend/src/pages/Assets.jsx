@@ -28,6 +28,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import {
   fetchAssets,
@@ -1251,8 +1252,12 @@ const Assets = () => {
             assetData: formData,
           }),
         ).unwrap();
+
+        toast.success("Asset updated.");
       } else {
         await dispatch(createAsset(formData)).unwrap();
+
+        toast.success("Asset added.");
       }
 
       setShowForm(false);
@@ -1261,7 +1266,11 @@ const Assets = () => {
 
       loadAssets();
     } catch (error) {
-      // Redux state contains the error.
+      toast.error(
+        typeof error === "string"
+          ? error
+          : "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -1289,6 +1298,8 @@ const Assets = () => {
 
       setDeleteTarget(null);
 
+      toast.success("Asset deleted.");
+
       const currentPage = pagination.currPage || 1;
 
       const shouldGoBack = assets.length === 1 && currentPage > 1;
@@ -1297,7 +1308,11 @@ const Assets = () => {
         page: shouldGoBack ? currentPage - 1 : currentPage,
       });
     } catch (error) {
-      // Redux handles error.
+      toast.error(
+        typeof error === "string"
+          ? error
+          : "Failed to delete asset. Please try again."
+      );
     }
   };
 

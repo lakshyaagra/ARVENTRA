@@ -28,6 +28,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import {
     fetchLoans,
@@ -1397,8 +1398,12 @@ const Loan = () => {
                         loanData: formData,
                     }),
                 ).unwrap();
+
+                toast.success("Loan updated.");
             } else {
                 await dispatch(createLoan(formData)).unwrap();
+
+                toast.success("Loan added.");
             }
 
             setShowForm(false);
@@ -1407,7 +1412,11 @@ const Loan = () => {
 
             loadLoans();
         } catch (error) {
-            // Redux state contains the error.
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Something went wrong. Please try again."
+            );
         }
     };
 
@@ -1435,6 +1444,8 @@ const Loan = () => {
 
             setDeleteTarget(null);
 
+            toast.success("Loan deleted.");
+
             const currentPage = pagination?.currPage || 1;
 
             const shouldGoBack = loans.length === 1 && currentPage > 1;
@@ -1443,7 +1454,11 @@ const Loan = () => {
                 page: shouldGoBack ? currentPage - 1 : currentPage,
             });
         } catch (error) {
-            // Redux handles error.
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Failed to delete loan. Please try again."
+            );
         }
     };
 

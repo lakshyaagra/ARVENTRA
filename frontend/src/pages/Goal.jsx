@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import {
   ArrowLeft,
   Plus,
@@ -1237,8 +1238,10 @@ const Goals = () => {
           goalData: formData,
         }),
       ).unwrap();
+      toast.success("Goal updated.");
     } else {
       await dispatch(createGoal(formData)).unwrap();
+      toast.success("Goal created.");
     }
 
     setModalOpen(false);
@@ -1270,6 +1273,8 @@ const Goals = () => {
     try {
       await dispatch(deleteGoal(goal._id)).unwrap();
 
+      toast.success("Goal deleted.");
+
       /*
        * If the deleted goal was the last item
        * on the current page, move back one page.
@@ -1292,7 +1297,9 @@ const Goals = () => {
         }),
       ).unwrap();
     } catch (error) {
-      console.error("Delete goal failed:", error);
+      toast.error(
+        typeof error === "string" ? error : "Failed to delete goal. Please try again."
+      );
     }
   };
 

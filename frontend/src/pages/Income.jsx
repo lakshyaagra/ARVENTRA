@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
     Plus,
     Search,
@@ -933,11 +934,15 @@ const Income = () => {
                     })
                 ).unwrap();
 
+                toast.success("Income entry updated.");
+
             } else {
 
                 await dispatch(
                     createIncome(payload)
                 ).unwrap();
+
+                toast.success("Income entry added.");
 
             }
 
@@ -951,7 +956,11 @@ const Income = () => {
 
         } catch (error) {
 
-            // Redux slice handles the error.
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Something went wrong. Please try again."
+            );
 
         }
     };
@@ -1018,6 +1027,8 @@ const Income = () => {
 
             setDeleteTarget(null);
 
+            toast.success("Income entry deleted.");
+
             const currentPage =
                 pagination.currPage || 1;
 
@@ -1033,7 +1044,11 @@ const Income = () => {
 
         } catch (error) {
 
-            // Redux handles error.
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Failed to delete income entry. Please try again."
+            );
 
         }
     };
@@ -1164,25 +1179,18 @@ const Income = () => {
             {/* =================================================
             FILTERS
             ================================================= */}
-
             <section className="rounded-2xl border border-[#293533] bg-[#171F1E] p-5">
-
                 <div className="grid gap-4 lg:grid-cols-[1.8fr_1fr_1fr_1fr_auto]">
-
                     {/* SEARCH */}
-
                     <form
                         onSubmit={handleSearch}
                         className="flex gap-2"
                     >
-
                         <div className="relative flex-1">
-
                             <Search
                                 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600"
                                 aria-hidden="true"
                             />
-
                             <input
                                 type="text"
                                 value={searchInput}
@@ -1194,9 +1202,7 @@ const Income = () => {
                                 placeholder="Search income source..."
                                 className="w-full rounded-lg border border-[#293533] bg-[#1B2422] py-2.5 pl-9 pr-3 text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-teal-700"
                             />
-
                         </div>
-
 
                         <button
                             type="submit"
@@ -1204,22 +1210,17 @@ const Income = () => {
                         >
                             Search
                         </button>
-
                     </form>
 
-
                     {/* CATEGORY */}
-
                     <select
                         value={category}
                         onChange={handleCategoryChange}
                         className="rounded-lg border border-[#293533] bg-[#1B2422] px-3 py-2.5 text-sm capitalize text-slate-300 outline-none focus:border-teal-700"
                     >
-
                         <option value="">
                             All categories
                         </option>
-
                         {categories.map(
                             (item) => (
                                 <option
@@ -1230,58 +1231,43 @@ const Income = () => {
                                 </option>
                             )
                         )}
-
                     </select>
 
-
                     {/* SORT */}
-
                     <select
                         value={sort}
                         onChange={handleSortChange}
                         className="rounded-lg border border-[#293533] bg-[#1B2422] px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-teal-700"
                     >
-
                         <option value="createdAt">
                             Date added
                         </option>
-
                         <option value="receivedDate">
                             Received date
                         </option>
-
                         <option value="amount">
                             Amount
                         </option>
-
                         <option value="incomeSource">
                             Income source
                         </option>
-
                     </select>
 
-
                     {/* ORDER */}
-
                     <select
                         value={order}
                         onChange={handleOrderChange}
                         className="rounded-lg border border-[#293533] bg-[#1B2422] px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-teal-700"
                     >
-
                         <option value="desc">
                             Descending
                         </option>
-
                         <option value="asc">
                             Ascending
                         </option>
-
                     </select>
 
-
                     {/* RESET */}
-
                     <button
                         type="button"
                         onClick={resetFilters}
@@ -1289,16 +1275,12 @@ const Income = () => {
                     >
                         Reset
                     </button>
-
                 </div>
-
             </section>
-
 
             {/* =================================================
             INCOME LIST
             ================================================= */}
-
             <section className="mt-6 rounded-2xl border border-[#293533] bg-[#171F1E]">
                 {/* LIST HEADER */}
                 <div className="flex flex-col gap-2 border-b border-[#293533] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -1334,7 +1316,6 @@ const Income = () => {
                                 ? "Try changing your search or filters."
                                 : "Add your first income record to start tracking your cash flow."}
                         </p>
-
                         {!search &&
                             !category && (
                                 <button
@@ -1348,20 +1329,14 @@ const Income = () => {
                                         className="h-4 w-4"
                                         aria-hidden="true"
                                     />
-
                                     Add income
                                 </button>
                             )}
-
                     </div>
-
                 ) : (
-
                     <div>
-
                         {incomes.map(
                             (item, index) => (
-
                                 <div
                                     key={item._id}
                                     className={`px-6 py-5 ${index <
@@ -1371,33 +1346,22 @@ const Income = () => {
                                             : ""
                                         }`}
                                 >
-
                                     <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-
                                         {/* INFORMATION */}
-
                                         <div className="min-w-0">
-
                                             <div className="flex items-center gap-3">
-
                                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-500/10">
-
                                                     <Wallet
                                                         className="h-5 w-5 text-teal-400"
                                                         aria-hidden="true"
                                                     />
-
                                                 </div>
-
-
                                                 <div className="min-w-0">
-
                                                     <h3 className="truncate text-sm font-medium text-slate-200">
                                                         {
                                                             item.incomeSource
                                                         }
                                                     </h3>
-
                                                     <p className="mt-1 text-xs capitalize text-slate-600">
                                                         {
                                                             item.category
@@ -1407,26 +1371,18 @@ const Income = () => {
                                                             item.paymentMethod
                                                         }
                                                     </p>
-
                                                 </div>
-
                                             </div>
-
                                         </div>
 
-
                                         {/* AMOUNT + DATE */}
-
                                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-
                                             <div className="sm:text-right">
-
                                                 <p className="text-lg font-semibold text-teal-400">
                                                     {currency(
                                                         item.amount
                                                     )}
                                                 </p>
-
                                                 <p className="mt-1 text-xs text-slate-600">
                                                     {
                                                         formatDate(
@@ -1434,14 +1390,10 @@ const Income = () => {
                                                         )
                                                     }
                                                 </p>
-
                                             </div>
 
-
                                             {/* ACTIONS */}
-
                                             <div className="flex items-center gap-2">
-
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -1456,13 +1408,10 @@ const Income = () => {
                                                         className="h-4 w-4"
                                                         aria-hidden="true"
                                                     />
-
                                                     <span className="hidden sm:inline">
                                                         View
                                                     </span>
                                                 </button>
-
-
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -1477,13 +1426,10 @@ const Income = () => {
                                                         className="h-4 w-4"
                                                         aria-hidden="true"
                                                     />
-
                                                     <span className="hidden sm:inline">
                                                         Edit
                                                     </span>
                                                 </button>
-
-
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -1498,38 +1444,25 @@ const Income = () => {
                                                         className="h-4 w-4"
                                                         aria-hidden="true"
                                                     />
-
                                                     <span className="hidden sm:inline">
                                                         Delete
                                                     </span>
                                                 </button>
-
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 </div>
-
                             )
                         )}
-
                     </div>
-
                 )}
-
             </section>
-
 
             {/* =================================================
             PAGINATION
             ================================================= */}
-
             {pagination.totalPages > 0 && (
-
                 <div className="mt-5 flex items-center justify-between rounded-xl border border-[#293533] bg-[#171F1E] px-5 py-4">
-
                     <button
                         type="button"
                         onClick={
@@ -1545,13 +1478,9 @@ const Income = () => {
                             className="h-4 w-4"
                             aria-hidden="true"
                         />
-
                         Previous
                     </button>
-
-
                     <p className="text-sm text-slate-500">
-
                         Page{" "}
                         <span className="text-slate-300">
                             {pagination.currPage}
@@ -1562,8 +1491,6 @@ const Income = () => {
                         </span>
 
                     </p>
-
-
                     <button
                         type="button"
                         onClick={goToNextPage}
@@ -1574,16 +1501,12 @@ const Income = () => {
                         className="flex items-center gap-2 rounded-lg border border-[#293533] px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-[#1B2422] disabled:cursor-not-allowed disabled:opacity-30"
                     >
                         Next
-
                         <ChevronRight
                             className="h-4 w-4"
                             aria-hidden="true"
                         />
-
                     </button>
-
                 </div>
-
             )}
 
 
@@ -1592,7 +1515,6 @@ const Income = () => {
             ================================================= */}
 
             {showForm && (
-
                 <IncomeFormModal
                     editingIncome={
                         editingIncome
@@ -1611,7 +1533,6 @@ const Income = () => {
                     }
                     error={error}
                 />
-
             )}
 
 
@@ -1620,7 +1541,6 @@ const Income = () => {
             ================================================= */}
 
             {showDetails && (
-
                 <IncomeDetailsModal
                     income={
                         selectedIncome
@@ -1635,16 +1555,13 @@ const Income = () => {
                         openEditModal
                     }
                 />
-
             )}
-
 
             {/* =================================================
             DELETE MODAL
             ================================================= */}
 
             {deleteTarget && (
-
                 <DeleteModal
                     income={
                         deleteTarget
@@ -1661,11 +1578,8 @@ const Income = () => {
                         deleting
                     }
                 />
-
             )}
-
         </>
     );
 };
-
 export default Income;

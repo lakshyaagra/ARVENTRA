@@ -27,9 +27,8 @@ import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Home />} />
+        <Routes>
+            <Route path="/" element={<Home />} />
 
                 <Route element={<PublicOnlyRoute />}> {/*agr authenticated ho to dashboard shift ho jao*/}
                     <Route path="/login" element={<Login />} />
@@ -63,7 +62,6 @@ const AppRoutes = () => {
 
                 <Route path="*" element={<NotFound />} />
             </Routes>
-        </BrowserRouter>
     );
 };
 
