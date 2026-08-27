@@ -4,7 +4,7 @@ const rateLimit = require("express-rate-limit");
 // attempts (skipSuccessfulRequests) so a legitimate user who gets their
 // password right isn't penalized by earlier mistakes in the same window.
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 1 * 60 * 1000, // 15 minutes
     max: 8,
     standardHeaders: true,
     legacyHeaders: false,

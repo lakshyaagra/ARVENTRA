@@ -6,6 +6,8 @@ import {
     Clock3,
     CheckCircle2,
     AlertCircle,
+    Menu,
+    X,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -76,6 +78,12 @@ const Contact = () => {
     const [subject, setSubject] = useState("");
     const [message, setMessage] = useState("");
     const [validationError, setValidationError] = useState("");
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const handleNavClick = (path) => {
+        setIsMenuOpen(false);
+        navigate(path);
+    };
 
     /* ================================================================
        FETCH CONTACT HISTORY (account holders only — the endpoint
@@ -184,23 +192,29 @@ const Contact = () => {
             {/* =========================================================
                 NAVBAR
             ========================================================= */}
-            <header className="left-0 top-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-0">
+            <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+                    {/* Logo */}
                     <div
-                        className="flex h-28 cursor-pointer items-center justify-center gap-0"
-                        onClick={() => navigate("/")}
+                        className="flex cursor-pointer items-center gap-2"
+                        onClick={() => handleNavClick("/")}
                     >
-                        <img src={ARVENTRA} alt="Logo" className="h-18 w-18 cursor-pointer" />
+                        <img
+                            src={ARVENTRA}
+                            alt="Logo"
+                            className="h-10 w-10 cursor-pointer object-contain"
+                        />
                         <button className="cursor-pointer text-xl font-semibold tracking-wide text-white">
                             ARVENTRA
                         </button>
                     </div>
 
+                    {/* Desktop Navigation */}
                     <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
                         <button
                             onClick={() => navigate("/contact")}
                             className="text-teal-400"
-                            >
+                        >
                             Contact
                         </button>
                         <button
@@ -208,6 +222,18 @@ const Contact = () => {
                             className="transition hover:text-white"
                         >
                             Home
+                        </button>
+                        <button
+                            onClick={() => navigate("/learning")}
+                            className="transition hover:text-white"
+                        >
+                            Learn
+                        </button>
+                        <button
+                            onClick={() => navigate("/calculators")}
+                            className="transition hover:text-white"
+                        >
+                            Calculators
                         </button>
 
                         {isAuthenticated ? (
@@ -225,7 +251,6 @@ const Contact = () => {
                                 >
                                     Sign in
                                 </button>
-
                                 <button
                                     onClick={() => navigate("/register")}
                                     className="rounded-lg border border-[#40504D] px-4 py-2 text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
@@ -235,13 +260,84 @@ const Contact = () => {
                             </>
                         )}
                     </nav>
+
+                    {/* Mobile Hamburger Button */}
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="flex h-10 w-10 items-center justify-center rounded-lg p-2 text-slate-300 hover:bg-[#1C2624] hover:text-white md:hidden"
+                        aria-label="Toggle Menu"
+                    >
+                        {isMenuOpen ? (
+                            <X className="h-6 w-6" />
+                        ) : (
+                            <Menu className="h-6 w-6" />
+                        )}
+                    </button>
                 </div>
+
+                {/* Mobile Dropdown Menu */}
+                {isMenuOpen && (
+                    <div className="border-b border-white/10 bg-[#111817]/95 px-6 py-4 md:hidden">
+                        <nav className="flex flex-col gap-4 text-left text-sm text-slate-300">
+                            <button
+                                onClick={() => handleNavClick("/contact")}
+                                className="py-2 text-left text-teal-400"
+                            >
+                                Contact
+                            </button>
+                            <button
+                                onClick={() => handleNavClick("/")}
+                                className="py-2 text-left transition hover:text-white"
+                            >
+                                Home
+                            </button>
+                            <button
+                                onClick={() => handleNavClick("/learning")}
+                                className="py-2 text-left transition hover:text-white"
+                            >
+                                Learn
+                            </button>
+                            <button
+                                onClick={() => handleNavClick("/calculators")}
+                                className="py-2 text-left transition hover:text-white"
+                            >
+                                Calculators
+                            </button>
+
+                            <div className="mt-2 flex flex-col gap-3 border-t border-white/10 pt-4">
+                                {isAuthenticated ? (
+                                    <button
+                                        onClick={() => handleNavClick("/dashboard")}
+                                        className="w-full rounded-lg border border-[#40504D] py-2.5 text-center text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                                    >
+                                        Dashboard
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => handleNavClick("/login")}
+                                            className="w-full py-2 text-left transition hover:text-white"
+                                        >
+                                            Sign in
+                                        </button>
+                                        <button
+                                            onClick={() => handleNavClick("/register")}
+                                            className="w-full rounded-lg border border-[#40504D] py-2.5 text-center text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                                        >
+                                            Create account
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </nav>
+                    </div>
+                )}
             </header>
 
             {/* =========================================================
                 MAIN
             ========================================================= */}
-            <main className="mx-auto max-w-7xl px-6 pb-16 pt-16">
+            <main className="mx-auto max-w-7xl px-6 pb-16 pt-32">
                 <div className="mb-8 max-w-3xl">
                     <Eyebrow>Support</Eyebrow>
 

@@ -1241,7 +1241,6 @@ const Goals = () => {
       toast.success("Goal updated.");
     } else {
       await dispatch(createGoal(formData)).unwrap();
-      toast.success("Goal created.");
     }
 
     setModalOpen(false);

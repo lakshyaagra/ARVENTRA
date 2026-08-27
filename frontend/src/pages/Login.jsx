@@ -1,4 +1,5 @@
-import { useDispatch } from "react-redux"
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthLayout } from "../layouts/AuthLayout";
 import Input from "../components/ui/Input";
@@ -6,8 +7,8 @@ import Button from "../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../validations/authValidation";
-import { login,getCurrentUser } from "../services/authService";
-import { loginStart,loginSuccess,loginFailure } from "../features/auth/authSlice";
+import { login, getCurrentUser } from "../services/authService";
+import { loginStart, loginSuccess, loginFailure } from "../features/auth/authSlice";
 import { setAccessToken } from "../api/axios";
 
 const Login = () => {
@@ -15,39 +16,34 @@ const Login = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const sessionExpired = searchParams.get("sessionExpired") === "1";
+    const [apiError, setApiError] = useState("");
+
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm({
-          resolver: zodResolver(loginSchema)
-        });
+        resolver: zodResolver(loginSchema)
+    });
 
     const onSubmit = async (data) => {
+        setApiError("");
         dispatch(loginStart());
         try {
-            //1. Login — issues a short-lived access token in the response
-            // body, and sets the httpOnly refresh-token cookie server-side.
             const loginResponse = await login(data);
-            // 2. Keep the access token in memory only (never localStorage)
             setAccessToken(loginResponse.token);
-            // 3. Get logged-in user's information 
             const userResponse = await getCurrentUser(); 
-            // 4. Store both user and token in Redux 
             dispatch( 
                 loginSuccess({ 
                     user: userResponse.user, 
                     token: loginResponse.token, 
                 }) 
             );
-            // 5. Go to dashboard
             navigate("/dashboard");
         } catch (error) {
-            dispatch(loginFailure());
-            console.error(
-                error.response?.data?.message ||
-                "Login failed"
-            );
+            const message = error.response?.data?.message || "Invalid email or password";
+            dispatch(loginFailure(message));
+            setApiError(message);
         }
     };
 
@@ -73,10 +69,7 @@ const Login = () => {
                     </div>
                 )}
 
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <Input
                         label="Email"
                         name="email"
@@ -92,11 +85,21 @@ const Login = () => {
                         register={register}
                         error={errors.password}
                     />
+
+                    {/* Display API Error below password field */}
+                    {apiError && (
+                        <div className="rounded-lg border border-red-900/40 bg-red-950/20 px-4 py-3 mt-2">
+                            <p className="text-sm text-red-400">
+                                {apiError}
+                            </p>
+                        </div>
+                    )}
+
                     <div className="flex justify-end">
                         <button
                             type="button"
                             onClick={() => navigate("/forgot-password")}
-                            className="text-sm text-teal-400 hover:text-teal-300 "
+                            className="text-sm text-teal-400 hover:text-teal-300"
                         >
                             Forgot Password?
                         </button>
@@ -119,4 +122,5 @@ const Login = () => {
         </AuthLayout>
     );
 };
+
 export default Login;

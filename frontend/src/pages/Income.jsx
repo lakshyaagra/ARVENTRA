@@ -313,7 +313,7 @@ const IncomeFormModal = ({
                         name="notes"
                         value={formData.notes}
                         onChange={handleChange}
-                        placeholder="Optional note"
+                        placeholder="Note"
                         className="mt-2 w-full rounded-lg border border-[#293533] bg-[#1B2422] px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-teal-700"
                     />
                 </div>
@@ -509,7 +509,6 @@ const IncomeDetailsModal = ({
                     {/* ACTIONS */}
 
                     <div className="flex justify-end gap-3 pt-2">
-
                         <button
                             type="button"
                             onClick={() => onEdit(income)}
@@ -519,11 +518,8 @@ const IncomeDetailsModal = ({
                                 className="h-4 w-4"
                                 aria-hidden="true"
                             />
-
                             Edit
                         </button>
-
-
                         <button
                             type="button"
                             onClick={onClose}
@@ -531,69 +527,52 @@ const IncomeDetailsModal = ({
                         >
                             Done
                         </button>
-
                     </div>
-
                 </div>
-
             ) : (
-
                 <div className="py-16 text-center">
                     <p className="text-sm text-slate-500">
                         Income details could not be found.
                     </p>
                 </div>
-
             )}
-
         </Modal>
     );
-
 };
 
 /* ============================================================
 DETAIL ITEM
 ============================================================ */
-
 const DetailItem = ({
     icon: Icon,
     label,
     value,
     capitalize = false,
 }) => {
-
     return (
         <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-4">
-
             <div className="flex items-center gap-2">
-
                 <Icon
                     className="h-4 w-4 text-slate-500"
                     aria-hidden="true"
                 />
-
                 <p className="text-xs text-slate-500">
                     {label}
                 </p>
-
             </div>
-
             <p
                 className={`mt-2 text-sm text-slate-200 ${capitalize ? "capitalize" : ""
                     }`}
             >
                 {value || "—"}
             </p>
-
         </div>
     );
-
 };
 
 /* ============================================================
 DELETE CONFIRMATION MODAL
 ============================================================ */
-
 const DeleteModal = ({
     income,
     onClose,
@@ -941,8 +920,6 @@ const Income = () => {
                 await dispatch(
                     createIncome(payload)
                 ).unwrap();
-
-                toast.success("Income entry added.");
 
             }
 

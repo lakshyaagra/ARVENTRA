@@ -17,8 +17,9 @@ const app = express();
 const server=http.createServer(app);
 const io=new Server(server,{
   cors: {
-    origin: "http://localhost:5173", // Allow your frontend origin
-    methods: ["GET", "POST"]
+    origin: process.meta.FRONTEND_URL ,// Allow your frontend origin
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -37,7 +38,7 @@ app.use(helmet());
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: process.meta.FRONTEND_URL,
         credentials: true
     })
 );

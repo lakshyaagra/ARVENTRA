@@ -1402,8 +1402,6 @@ const Loan = () => {
                 toast.success("Loan updated.");
             } else {
                 await dispatch(createLoan(formData)).unwrap();
-
-                toast.success("Loan added.");
             }
 
             setShowForm(false);

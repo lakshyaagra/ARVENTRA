@@ -1256,8 +1256,6 @@ const Assets = () => {
         toast.success("Asset updated.");
       } else {
         await dispatch(createAsset(formData)).unwrap();
-
-        toast.success("Asset added.");
       }
 
       setShowForm(false);

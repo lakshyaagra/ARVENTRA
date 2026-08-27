@@ -772,7 +772,6 @@ const Expense = () => {
         toast.success("Expense entry updated.");
       } else {
         await dispatch(createExpense(payload)).unwrap();
-        toast.success("Expense entry added.");
       }
 
       closeForm();

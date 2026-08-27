@@ -1,6 +1,7 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/User');
 const sendEmail = require('../utils/sendMail');
+const { generateToken, hashToken } = require('../utils/token')
 
 // Ye email verification aur password reset ke liye random secret token banane/hash karne ke kaam aa rahe hain
 const {

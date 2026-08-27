@@ -7,6 +7,8 @@ import {
   Landmark,
   CalendarDays,
   ReceiptText,
+  Menu,
+  X,
 } from "lucide-react";
 import ARVENTRA from "../assets/ARVENTRA.png";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +17,7 @@ import CalculatorResult from "../components/Calculator/CalculatorResult";
 import calculatorService from "../services/calculatorService";
 import { calculatorGroups, calculators } from "../config/calculatorConfig";
 import useAuth from "../hooks/authHook";
+
 /* Map icons directly in case they are missing from group objects */
 const ICON_MAP = {
   investments: TrendingUp,
@@ -36,8 +39,14 @@ const Calculators = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const goToAppOr = (destination) => navigate(isAuthenticated ? "/dashboard" : destination);
+
+  const handleNavClick = (path) => {
+    setIsMenuOpen(false);
+    navigate(path);
+  };
 
   const handleSelectCalculator = (calculator) => {
     setSelectedCalculator(calculator);
@@ -101,24 +110,26 @@ const Calculators = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#111817] text-slate-100">
+    <div className="min-h-screen bg-[#111817] text-slate-100">
       {/* NAVBAR */}
-      <header className="left-0 top-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-0">
+      <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-9">
+          {/* Logo */}
           <div
-            className="flex h-28 cursor-pointer items-center justify-center gap-0"
-            onClick={() => navigate("/")}
+            className="flex cursor-pointer items-center gap-2"
+            onClick={() => handleNavClick("/")}
           >
             <img
               src={ARVENTRA}
               alt="Logo"
-              className="h-18 w-18 cursor-pointer"
+              className="h-10 w-10 cursor-pointer object-contain"
             />
             <button className="cursor-pointer text-xl font-semibold tracking-wide text-white">
               ARVENTRA
             </button>
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 text-sm text-slate-400 md:flex">
             <button
               onClick={() => navigate("/calculators")}
@@ -126,7 +137,6 @@ const Calculators = () => {
             >
               Calculators
             </button>
-
             <button
               onClick={() => navigate("/")}
               className="transition hover:text-white"
@@ -155,7 +165,10 @@ const Calculators = () => {
               </button>
             ) : (
               <>
-                <button onClick={() => navigate("/login")} className="transition hover:text-white">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="transition hover:text-white"
+                >
                   Sign in
                 </button>
                 <button
@@ -167,11 +180,82 @@ const Calculators = () => {
               </>
             )}
           </nav>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex h-10 w-10 items-center justify-center rounded-lg p-2 text-slate-300 hover:bg-[#1C2624] hover:text-white md:hidden"
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="border-b border-white/10 bg-[#111817]/95 px-6 py-4 md:hidden">
+            <nav className="flex flex-col gap-4 text-left text-sm text-slate-300">
+              <button
+                onClick={() => handleNavClick("/calculators")}
+                className="py-2 text-left text-teal-400"
+              >
+                Calculators
+              </button>
+              <button
+                onClick={() => handleNavClick("/")}
+                className="py-2 text-left transition hover:text-white"
+              >
+                Home
+              </button>
+              <button
+                onClick={() => handleNavClick("/learning")}
+                className="py-2 text-left transition hover:text-white"
+              >
+                Learn
+              </button>
+              <button
+                onClick={() => handleNavClick("/contact")}
+                className="py-2 text-left transition hover:text-white"
+              >
+                Contact
+              </button>
+
+              <div className="mt-2 flex flex-col gap-3 border-t border-white/10 pt-4">
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => handleNavClick("/dashboard")}
+                    className="w-full rounded-lg border border-[#40504D] py-2.5 text-center text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                  >
+                    Dashboard
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleNavClick("/login")}
+                      className="w-full py-2 text-left transition hover:text-white"
+                    >
+                      Sign in
+                    </button>
+                    <button
+                      onClick={() => handleNavClick("/register")}
+                      className="w-full rounded-lg border border-[#40504D] py-2.5 text-center text-slate-200 transition hover:border-teal-500 hover:text-teal-400"
+                    >
+                      Create account
+                    </button>
+                  </>
+                )}
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* MOBILE CALCULATOR SELECTOR */}
-      <div className="mx-auto max-w-7xl px-6 pt-6 lg:hidden">
+      <div className="mx-auto max-w-7xl px-6 pt-34 lg:hidden">
         <label className="mb-2 block text-xs text-slate-500">
           Choose a calculator
         </label>
@@ -200,10 +284,10 @@ const Calculators = () => {
       </div>
 
       {/* DESKTOP SIDEBAR + MAIN */}
-      <div className="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl">
+      <div className="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl pt-20 lg:pt-24">
         {/* SIDEBAR */}
         <aside className="hidden w-64 shrink-0 border-r border-[#293533] lg:block">
-          <div className="sticky top-0 p-6">
+          <div className="sticky top-24 p-6">
             {/* SIDEBAR TITLE */}
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-teal-700/30 bg-teal-500/10">
@@ -273,7 +357,7 @@ const Calculators = () => {
         </aside>
 
         {/* MAIN CONTENT */}
-        <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-16 lg:px-12">
+        <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12 lg:px-12 lg:py-16">
           {!selectedCalculator ? (
             /* INTRO STATE */
             <div className="w-full max-w-2xl text-center">

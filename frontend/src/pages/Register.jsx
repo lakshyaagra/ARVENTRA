@@ -11,6 +11,7 @@ import { register as registerUser } from "../services/authService";
 const Register = () => {
     const navigate = useNavigate();
     const [registered, setRegistered] = useState(false);
+    const [apiError, setApiError] = useState("");
 
     const {
         register,
@@ -27,16 +28,17 @@ const Register = () => {
     }, [registered, navigate]);
 
     const onSubmit = async (data) => {
+        setApiError("");
         try {
             const response = await registerUser(data);
             setRegistered(true);
         } catch (error) {
-            console.error(
-                error.response?.data?.message ||
-                "Registration failed"
+            setApiError(
+                error.response?.data?.message || "Email already registered"
             );
         }
     };
+
     return (
         <AuthLayout>
             <div className="space-y-2">
@@ -82,7 +84,7 @@ const Register = () => {
                                 name="email"
                                 placeholder="Enter your email..."
                                 register={register}
-                                error={errors.email}
+                                error={errors.email || (apiError ? { message: apiError } : undefined)}
                             />
                             <Input
                                 label="Password"
@@ -101,8 +103,7 @@ const Register = () => {
                             <button
                                 type="button"
                                 onClick={() => navigate("/login")}
-                                className="ml-2 cursor-pointer font-semibold text-teal-400
-                                          hover:text-teal-300 transition"
+                                className="ml-2 cursor-pointer font-semibold text-teal-400 hover:text-teal-300 transition"
                             >
                                 Sign In
                             </button>
