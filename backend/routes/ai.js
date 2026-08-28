@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const validateAIRequest = require("../middleware/validateAIRequest");
+const validateAIRequest = require("../middleware/validateAiRequest");
 
 const authMiddleware = require("../middleware/authMiddleware");
 const { chatWithAI,getConversations,getConversationById } = require("../controllers/aiController");
