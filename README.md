@@ -1,22 +1,18 @@
 # 🚀 ARVENTRA
 
-> An AI-Powered Financial Operating System built to help users track finances, achieve goals, improve financial health, and receive intelligent AI-driven financial insights.
+Arventra is a personal finance and credit mentorship platform built to help users track their income, expenses, assets, loans, and financial goals in one place — while an integrated AI layer offers personalized financial guidance and a computed "Credit Health Score" gives users a single, actionable view of their financial standing.
 
 ---
 
-# 🌟 Vision
+## Why Arventra
 
-To build an AI-powered Financial Operating System that helps people make better financial decisions throughout every stage of life.
+Most personal finance apps stop at "track your spending." Arventra goes further:
 
----
-
-# 🎯 Mission
-
-We are building a trustworthy AI-powered financial companion where:
-
-* Every recommendation is transparent.
-* Every piece of financial data belongs to the user.
-* Every financial decision remains in the user's hands.
+- **Full financial picture** — income, expenses, assets, and loans are tracked as first-class, related modules, not isolated logs.
+- **Credit Health Score** — a computed score (net worth, savings rate, debt-to-income ratio, asset-to-loan ratio) that turns raw numbers into a single, understandable health indicator.
+- **AI-guided mentorship** — a conversational AI layer (Gemini-powered) gives contextual financial advice grounded in the user's actual data, not generic tips.
+- **Automated nudges** — scheduled jobs remind users of upcoming EMIs, flag risky savings rates, and deliver daily AI-generated insights, without the user needing to ask.
+- **Community** — a discussion space where users can share and discuss financial questions and experiences.
 
 ---
 
@@ -91,7 +87,7 @@ We are building a trustworthy AI-powered financial companion where:
 * EMI Calculator
 * SIP Calculator
 * Loan Calculator
-* Other Financial Planning Tools
+* Other More
 
 ## 🤖 AI Features
 
@@ -167,24 +163,6 @@ We are building a trustworthy AI-powered financial companion where:
 
 ---
 
-# 📂 Backend Architecture
-
-```text
-backend/
-│
-├── config/
-├── controllers/
-├── middleware/
-├── models/
-├── routes/
-├── services/
-├── socket/
-├── cron/
-├── utils/
-├── index.js
-└── package.json
-```
-
 ### Architecture Overview
 
 **Routes**
@@ -213,23 +191,6 @@ Contains reusable utility functions used across the application.
 
 ---
 
-# 📌 Project Status
-
-**Current Stage**
-
-🟢 Backend Development — Core functionality implemented
-
-🟢 Frontend Development — In progress
-
-⏳ Docker
-
-⏳ CI/CD
-
-⏳ Deployment
-
-⏳ Production Hardening
-
----
 
 # 🏗 Project Architecture
 
