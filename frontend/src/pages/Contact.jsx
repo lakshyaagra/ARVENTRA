@@ -193,7 +193,7 @@ const Contact = () => {
                 NAVBAR
             ========================================================= */}
             <header className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-[#111817]/40 backdrop-blur-[30px] backdrop-saturate-200">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-9">
                     {/* Logo */}
                     <div
                         className="flex cursor-pointer items-center gap-2"
