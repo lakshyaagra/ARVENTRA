@@ -41,6 +41,16 @@ const Register = () => {
 
     return (
         <AuthLayout>
+            {/* Top Navigation Action */}
+            <div className="flex justify-end pb-4">
+                <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="cursor-pointer text-xs sm:text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors duration-200 flex items-center gap-1.5"
+                >
+                    Explore Arventra <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
             <div className="space-y-2">
                 <div className="space-y-2">
                     <h2 className="text-4xl font-bold text-white">

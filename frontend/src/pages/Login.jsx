@@ -49,16 +49,27 @@ const Login = () => {
 
     return (
         <AuthLayout>
+            {/* Top Navigation Action */}
+            <div className="flex justify-end pb-4">
+                <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="cursor-pointer text-xs sm:text-sm font-medium text-slate-400 hover:text-teal-400 transition-colors duration-200 flex items-center gap-1.5"
+                >
+                    Explore Arventra <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+
             <div className="space-y-6">
                 <div>
                     <div className="space-y-2">
-                      <h2 className="text-4xl font-bold text-white">
-                          Welcome Back
-                      </h2>
-                      <p className="text-slate-400 leading-7">
-                          Sign in to continue your financial journey.
-                      </p>
-                  </div>
+                        <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                            Welcome Back
+                        </h2>
+                        <p className="text-slate-400 leading-7">
+                            Sign in to continue your financial journey.
+                        </p>
+                    </div>
                 </div>
 
                 {sessionExpired && (
