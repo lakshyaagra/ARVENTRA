@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { getAccessToken } from "../../api/axios";
-
-const API_BASE = import.meta.env.VITE_API_URL;
+import api, { getAccessToken } from "../../api/axios";
 
 const CommunityPanel = () => {
   const [discussions, setDiscussions] = useState([]);
@@ -52,36 +50,13 @@ const CommunityPanel = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState("");
 
-  /*
-   * =====================================================
-   * AUTH
-   * =====================================================
-   */
+  const isLoggedIn = Boolean(getAccessToken());
 
-  const getToken = () => {
-    // The access token now lives in memory only (see api/axios.js) —
-    // there's nothing in localStorage to read anymore.
-    return getAccessToken();
-  };
-  const isLoggedIn = Boolean(getToken());
-
-  const getHeaders = () => {
-    const token = getToken();
-
-    return {
-      "Content-Type": "application/json",
-      ...(token
-        ? {
-          Authorization: `Bearer ${token}`,
-        }
-        : {}),
-    };
-  };
-
-  // Pulled from Redux instead of decoding the JWT client-side — simpler,
-  // and avoids re-decoding a token that now rotates every 15 minutes.
   const { user } = useSelector((state) => state.auth);
   const currentUserId = user?._id || user?.id || null;
+
+  const getErrorMessage = (error, fallback) =>
+    error.response?.data?.message || error.message || fallback;
 
   /*
    * =====================================================
@@ -112,21 +87,11 @@ const CommunityPanel = () => {
         params.set("category", category);
       }
 
-      const response = await fetch(
-        `${API_BASE}/community?${params.toString()}`,
-        {
-          method: "GET",
-          headers: getHeaders(),
-        }
+      const response = await api.get(
+        `/community?${params.toString()}`
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch discussions."
-        );
-      }
+      const data = response.data;
 
       setDiscussions(data.discussions || []);
       setTotalPages(data.totalPages || 1);
@@ -147,21 +112,11 @@ const CommunityPanel = () => {
     try {
       setCommentsLoading(true);
 
-      const response = await fetch(
-        `${API_BASE}/community/${discussionId}/comments`,
-        {
-          method: "GET",
-          headers: getHeaders(),
-        }
+      const response = await api.get(
+        `/community/${discussionId}/comments`
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch comments."
-        );
-      }
+      const data = response.data;
 
       setComments(data.comments || []);
     } catch (error) {
@@ -251,19 +206,7 @@ const CommunityPanel = () => {
         tags: newDiscussion.tags.map((tag) => tag.trim()),
       };
 
-      const response = await fetch(`${API_BASE}/community`, {
-        method: "POST",
-        headers: getHeaders(),
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to create discussion."
-        );
-      }
+      await api.post(`/community`, payload);
 
       setNewDiscussion({
         type: "question",
@@ -280,7 +223,7 @@ const CommunityPanel = () => {
       await fetchDiscussions(1);
     } catch (error) {
       console.error("Create discussion error:", error);
-      alert(error.message);
+      alert(getErrorMessage(error, "Failed to create discussion."));
     } finally {
       setCreating(false);
     }
@@ -356,24 +299,10 @@ const CommunityPanel = () => {
     try {
       setCommentSubmitting(true);
 
-      const response = await fetch(
-        `${API_BASE}/community/${selectedDiscussion._id}/comments`,
-        {
-          method: "POST",
-          headers: getHeaders(),
-          body: JSON.stringify({
-            comment: newComment.trim(),
-          }),
-        }
+      await api.post(
+        `/community/${selectedDiscussion._id}/comments`,
+        { comment: newComment.trim() }
       );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to add comment."
-        );
-      }
 
       setNewComment("");
 
@@ -402,7 +331,7 @@ const CommunityPanel = () => {
       );
     } catch (error) {
       console.error("Add comment error:", error);
-      alert(error.message);
+      alert(getErrorMessage(error, "Failed to add comment."));
     } finally {
       setCommentSubmitting(false);
     }
@@ -426,58 +355,51 @@ const CommunityPanel = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE}/community/${discussion._id}/like`,
-        {
-          method: "POST",
-          headers: getHeaders(),
-        }
+      const response = await api.post(
+        `/community/${discussion._id}/like`
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to toggle like."
-        );
-      }
+      const data = response.data;
 
       const isLiked =
         data.message === "Discussion liked.";
 
-      setDiscussions((previous) =>
-        previous.map((item) => {
-          if (item._id !== discussion._id) {
-            return item;
-          }
+      const updateDiscussionState = (item) => {
+        const currentLikes = item.likes || [];
+        const updatedLikes = isLiked
+          ? [...currentLikes, currentUserId]
+          : currentLikes.filter(
+              (id) => String(id) !== String(currentUserId)
+            );
 
-          return {
-            ...item,
-            likesCount: Math.max(
-              0,
-              (item.likesCount || 0) +
-              (isLiked ? 1 : -1)
-            ),
-          };
-        })
+        return {
+          ...item,
+          likes: updatedLikes,
+          isLiked: isLiked,
+          likesCount: Math.max(
+            0,
+            (item.likesCount || 0) + (isLiked ? 1 : -1)
+          ),
+        };
+      };
+
+      setDiscussions((previous) =>
+        previous.map((item) =>
+          item._id === discussion._id ? updateDiscussionState(item) : item
+        )
       );
 
       if (
         selectedDiscussion &&
         selectedDiscussion._id === discussion._id
       ) {
-        setSelectedDiscussion((previous) => ({
-          ...previous,
-          likesCount: Math.max(
-            0,
-            (previous.likesCount || 0) +
-            (isLiked ? 1 : -1)
-          ),
-        }));
+        setSelectedDiscussion((previous) =>
+          updateDiscussionState(previous)
+        );
       }
     } catch (error) {
       console.error("Like error:", error);
-      alert(error.message);
+      alert(getErrorMessage(error, "Failed to toggle like."));
     }
   };
 
@@ -493,24 +415,12 @@ const CommunityPanel = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE}/community/comments/${commentId}`,
-        {
-          method: "PATCH",
-          headers: getHeaders(),
-          body: JSON.stringify({
-            comment: editingCommentText.trim(),
-          }),
-        }
+      const response = await api.patch(
+        `/community/comments/${commentId}`,
+        { comment: editingCommentText.trim() }
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to update comment."
-        );
-      }
+      const data = response.data;
 
       setComments((previous) =>
         previous.map((comment) =>
@@ -524,7 +434,7 @@ const CommunityPanel = () => {
       setEditingCommentText("");
     } catch (error) {
       console.error("Update comment error:", error);
-      alert(error.message);
+      alert(getErrorMessage(error, "Failed to update comment."));
     }
   };
 
@@ -544,21 +454,7 @@ const CommunityPanel = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE}/community/comments/${comment._id}`,
-        {
-          method: "DELETE",
-          headers: getHeaders(),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to delete comment."
-        );
-      }
+      await api.delete(`/community/comments/${comment._id}`);
 
       setComments((previous) =>
         previous.filter(
@@ -591,7 +487,7 @@ const CommunityPanel = () => {
       }
     } catch (error) {
       console.error("Delete comment error:", error);
-      alert(error.message);
+      alert(getErrorMessage(error, "Failed to delete comment."));
     }
   };
 
@@ -616,22 +512,7 @@ const CommunityPanel = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE}/community/${discussionId}`,
-        {
-          method: "DELETE",
-          headers: getHeaders(),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          "Failed to delete discussion."
-        );
-      }
+      await api.delete(`/community/${discussionId}`);
 
       setDiscussions((current) =>
         current.filter(
@@ -653,8 +534,10 @@ const CommunityPanel = () => {
       );
 
       alert(
-        error.message ||
-        "Something went wrong while deleting the discussion."
+        getErrorMessage(
+          error,
+          "Something went wrong while deleting the discussion."
+        )
       );
     }
   };
@@ -670,30 +553,19 @@ const CommunityPanel = () => {
     updatedData
   ) => {
     try {
-      const response = await fetch(
-        `${API_BASE}/community/${discussionId}`,
+      const response = await api.patch(
+        `/community/${discussionId}`,
         {
-          method: "PATCH",
-          headers: getHeaders(),
-          body: JSON.stringify({
-            ...updatedData,
-            title: updatedData.title?.trim(),
-            content: updatedData.content?.trim(),
-            tags: updatedData.tags?.map((tag) =>
-              tag.trim()
-            ),
-          }),
+          ...updatedData,
+          title: updatedData.title?.trim(),
+          content: updatedData.content?.trim(),
+          tags: updatedData.tags?.map((tag) =>
+            tag.trim()
+          ),
         }
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-          "Failed to update discussion."
-        );
-      }
+      const data = response.data;
 
       setDiscussions((current) =>
         current.map((discussion) =>
@@ -718,8 +590,10 @@ const CommunityPanel = () => {
       );
 
       alert(
-        error.message ||
-        "Something went wrong while updating the discussion."
+        getErrorMessage(
+          error,
+          "Something went wrong while updating the discussion."
+        )
       );
 
       return false;
@@ -1070,13 +944,6 @@ const CommunityPanel = () => {
           </div>
         ) : (
           discussions.map((discussion) => {
-            /*
-             * IMPORTANT:
-             * Ownership is calculated for THIS discussion.
-             *
-             * The backend still performs the real authorization
-             * check, so these buttons are only a UI convenience.
-             */
             const discussionOwnerId =
               discussion.user?._id ||
               discussion.user?.id ||
@@ -1087,6 +954,12 @@ const CommunityPanel = () => {
               currentUserId &&
               String(discussionOwnerId) ===
               String(currentUserId);
+
+            const isLiked =
+              discussion.isLiked ||
+              discussion.likes?.some(
+                (id) => String(id) === String(currentUserId)
+              );
 
             return (
               <article
@@ -1163,9 +1036,13 @@ const CommunityPanel = () => {
                         discussion
                       )
                     }
-                    className="text-[11px] text-slate-500 transition hover:text-teal-400"
+                    className={`text-[11px] transition ${
+                      isLiked
+                        ? "font-medium text-teal-400"
+                        : "text-slate-500 hover:text-teal-400"
+                    }`}
                   >
-                    ♡ {discussion.likesCount || 0}
+                    {isLiked ? "♥" : "♡"} {discussion.likesCount || 0}
                   </button>
 
                   <span className="text-[11px] text-slate-600">
@@ -1777,32 +1654,40 @@ const CommunityPanel = () => {
                 {/* Stats */}
 
                 <div className="mb-7 flex items-center gap-5 border-y border-[#293432] py-4">
-                  <button
-                    type="button"
-                    onClick={(event) =>
-                      handleToggleLike(
-                        event,
-                        selectedDiscussion
-                      )
-                    }
-                    className="text-xs text-slate-500 hover:text-teal-400"
-                  >
-                    ♡{" "}
-                    {selectedDiscussion.likesCount ||
-                      0}{" "}
-                    likes
-                  </button>
+                  {(() => {
+                    const isSelectedLiked =
+                      selectedDiscussion.isLiked ||
+                      selectedDiscussion.likes?.some(
+                        (id) => String(id) === String(currentUserId)
+                      );
+                    return (
+                      <button
+                        type="button"
+                        onClick={(event) =>
+                          handleToggleLike(
+                            event,
+                            selectedDiscussion
+                          )
+                        }
+                        className={`text-xs transition ${
+                          isSelectedLiked
+                            ? "font-medium text-teal-400"
+                            : "text-slate-500 hover:text-teal-400"
+                        }`}
+                      >
+                        {isSelectedLiked ? "♥" : "♡"}{" "}
+                        {selectedDiscussion.likesCount || 0} likes
+                      </button>
+                    );
+                  })()}
 
                   <span className="text-xs text-slate-600">
                     💬{" "}
-                    {selectedDiscussion.commentsCount ||
-                      0}{" "}
-                    comments
+                    {selectedDiscussion.commentsCount || 0} comments
                   </span>
                 </div>
 
                 {/* Comments */}
-
                 <div>
                   <div className="mb-4 flex items-center justify-between">
                     <h4 className="text-sm font-medium text-slate-300">
@@ -1831,16 +1716,10 @@ const CommunityPanel = () => {
                   ) : (
                     <div className="space-y-4">
                       {comments.map((comment) => {
-                        const commentOwnerId =
-                          comment.user?._id ||
-                          comment.user?.id ||
-                          comment.user;
+                        const commentOwnerId = comment.user?._id || comment.user?.id || comment.user;
 
                         const isCommentOwner =
-                          commentOwnerId &&
-                          currentUserId &&
-                          String(commentOwnerId) ===
-                          String(currentUserId);
+                          commentOwnerId && currentUserId && String(commentOwnerId) === String(currentUserId);
 
                         return (
                           <div
@@ -1871,7 +1750,6 @@ const CommunityPanel = () => {
                               </div>
 
                               {/* Comment owner actions */}
-
                               {isCommentOwner && (
                                 <div className="flex shrink-0 gap-2">
                                   <button
@@ -1972,7 +1850,6 @@ const CommunityPanel = () => {
               </div>
 
               {/* Add comment */}
-
               <form
                 onSubmit={handleAddComment}
                 className="border-t border-[#293432] bg-[#111817] p-4"

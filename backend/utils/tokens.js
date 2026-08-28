@@ -30,15 +30,27 @@ const generateRefreshToken = () => {
 const hashRefreshToken = (rawToken) =>
     crypto.createHash("sha256").update(rawToken).digest("hex");
 
+// Frontend (Vercel) and backend (Render) live on different domains in
+// production, so this cookie has to be sent cross-site on every
+// /users/refresh-token and /users/logout call. "None" is the only
+// sameSite value browsers will send cross-site, and they require
+// `secure: true` whenever sameSite is "None" — so both flip together
+// based on environment, matching the same fix made in csrf.js, rather
+// than secure alone being production-gated.
+//
 // Centralized so the cookie options can never drift between where it's
 // set (login, refresh) and where it's cleared (logout).
-const refreshCookieOptions = () => ({
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: REFRESH_TOKEN_TTL_MS,
-    path: "/users",
-});
+const refreshCookieOptions = () => {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    return {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: REFRESH_TOKEN_TTL_MS,
+        path: "/users",
+    };
+};
 
 module.exports = {
     ACCESS_TOKEN_TTL,
