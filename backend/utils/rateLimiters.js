@@ -4,7 +4,7 @@ const rateLimit = require("express-rate-limit");
 // attempts (skipSuccessfulRequests) so a legitimate user who gets their
 // password right isn't penalized by earlier mistakes in the same window.
 const loginLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 15 minutes
+    windowMs: 5 * 60 * 1000, // 5 minutes
     max: 8,
     standardHeaders: true,
     legacyHeaders: false,
@@ -18,7 +18,7 @@ const loginLimiter = rateLimit({
 // Looser — registration is naturally rarer per-IP than login attempts, but
 // still worth capping to blunt automated account-creation spam.
 const registerLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
+    windowMs: 10 * 60 * 1000, // 10 min
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
