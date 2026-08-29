@@ -16,7 +16,7 @@ const Register = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm({
         resolver: zodResolver(registerSchema)
     });
@@ -104,8 +104,8 @@ const Register = () => {
                                 register={register}
                                 error={errors.password}
                             />
-                            <Button>
-                                Create Account
+                            <Button disabled={isSubmitting}>
+                                {isSubmitting ? "Creating account..." : "Create Account"}
                             </Button>
                         </form>
                         <p className="text-center text-sm text-slate-400">
