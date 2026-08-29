@@ -1,33 +1,32 @@
-const { TransactionalEmailsApi, TransactionalEmailsApiApiKeys } = require("@getbrevo/brevo");
+const { BrevoClient } = require("@getbrevo/brevo");
 
-let emailApi = null;
+let brevo = null;
 
-const getEmailApi = () => {
-    if (emailApi) return emailApi;
-
-    emailApi = new TransactionalEmailsApi();
-    emailApi.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-
-    return emailApi;
+const getClient = () => {
+    if (brevo) return brevo;
+    brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
+    return brevo;
 };
 
 // Same interface as before (to, subject, html) — every caller
 // (sendVerificationEmailFor, forgotPassword, resendVerification) needs
 // zero changes. EMAIL_FROM must be the exact address verified under
 // Senders, Domains & Dedicated IPs > Senders in Brevo's dashboard.
+//
+// @getbrevo/brevo v6 uses a single BrevoClient with resource namespaces
+// (client.transactionalEmails.sendTransacEmail) rather than the older
+// per-resource *Api classes (TransactionalEmailsApi) used in v3.x.
 const sendEmail = async ({ to, subject, html }) => {
-    const api = getEmailApi();
+    const client = getClient();
 
     try {
-        await api.sendTransacEmail({
+        await client.transactionalEmails.sendTransacEmail({
             sender: { email: process.env.EMAIL_FROM },
             to: [{ email: to }],
             subject,
             htmlContent: html
         });
     } catch (err) {
-        // Brevo puts the useful detail in err.response.body/err.body rather
-        // than err.message — surface it so it actually shows in Render logs.
         console.error("BREVO ERROR BODY:", JSON.stringify(err.response?.body || err.body || err.message));
         throw err;
     }
