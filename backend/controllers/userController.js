@@ -32,10 +32,10 @@ const registerUser=async (req,res)=>{
             console.error("REGISTER VERIFICATION EMAIL ERROR:", emailErr);
         });
 
-        // select:false on the schema only hides the password on find/findOne
-        // queries — it does NOT apply to the document .create() hands back,
-        // so without this the (hashed) password would be sent in the response.
-        user.password = undefined;
+        // Don't mutate `user` itself — sendVerificationEmailFor still needs its
+        // password field intact for its own save() call running in the background.
+        const userResponse = user.toObject();
+        delete userResponse.password;
         res.status(201).json({
             message: "User Registered",
             success: true,
