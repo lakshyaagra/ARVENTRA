@@ -48,7 +48,7 @@ const refreshCookieOptions = () => {
         secure: isProduction,
         sameSite: isProduction ? "none" : "lax",
         maxAge: REFRESH_TOKEN_TTL_MS,
-        path: "/users",
+        path: "/",
     };
 };
 
