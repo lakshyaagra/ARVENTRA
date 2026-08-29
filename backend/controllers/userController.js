@@ -28,14 +28,9 @@ const registerUser=async (req,res)=>{
         req.body.password = hashedPassword;
         const user = await User.create(req.body);
 
-        try {
-            await sendVerificationEmailFor(user);
-        } catch (emailErr) {
-            // Don't fail registration just because the email didn't send —
-            // the account still exists and the user can request a new
-            // verification link via /resend-verification.
+        sendVerificationEmailFor(user).catch((emailErr) => {
             console.error("REGISTER VERIFICATION EMAIL ERROR:", emailErr);
-        }
+        });
 
         // select:false on the schema only hides the password on find/findOne
         // queries — it does NOT apply to the document .create() hands back,
