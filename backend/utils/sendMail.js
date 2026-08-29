@@ -1,40 +1,35 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-let transporter = null;
+let resend = null;
 
-const getTransporter = () => {
-    if (transporter) return transporter;
-
-    transporter = nodemailer.createTransport({
-        // Explicit host/port instead of the "service: gmail" shorthand —
-        // the shorthand doesn't expose a `family` option, and Render's
-        // network can't route the IPv6 address Gmail's SMTP sometimes
-        // resolves to, causing ENETUNREACH. Forcing IPv4 avoids that.
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env.EMAIL_FROM,
-            pass: process.env.EMAIL_APP_PASSWORD
-        },
-        family: 4
-    });
-
-    return transporter;
+const getResendClient = () => {
+    if (resend) return resend;
+    resend = new Resend(process.env.RESEND_API_KEY);
+    return resend;
 };
 
-// Fire-and-forget from the caller's perspective is tempting but wrong here —
-// callers await this so a delivery failure can be logged/surfaced rather
-// than silently vanishing.
+// Same interface as before (to, subject, html) — every caller
+// (sendVerificationEmailFor, forgotPassword, resendVerification) needs
+// zero changes. Only the delivery mechanism changed: this now sends over
+// HTTPS via Resend's API instead of raw SMTP, which Render's free tier
+// blocks outbound (ports 25/465/587) as of Sep 2025.
 const sendEmail = async ({ to, subject, html }) => {
-    const mailer = getTransporter();
+    const client = getResendClient();
 
-    await mailer.sendMail({
-        from: process.env.EMAIL_FROM,
+    const { data, error } = await client.emails.send({
+        from: process.env.EMAIL_FROM, // must be a verified sender/domain in your Resend account
         to,
         subject,
         html
     });
+
+    if (error) {
+        // Surface it the same way a thrown SMTP error used to — callers
+        // already await sendEmail and handle/log failures themselves.
+        throw new Error(error.message || "Failed to send email via Resend");
+    }
+
+    return data;
 };
 
 module.exports = sendEmail;
