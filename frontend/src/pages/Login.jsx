@@ -7,7 +7,7 @@ import Button from "../components/ui/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../validations/authValidation";
-import { login, getCurrentUser } from "../services/authService";
+import { login, getCurrentUser, resendVerification } from "../services/authService";
 import { loginStart, loginSuccess, loginFailure } from "../features/auth/authSlice";
 import { setAccessToken } from "../api/axios";
 
@@ -17,17 +17,21 @@ const Login = () => {
     const [searchParams] = useSearchParams();
     const sessionExpired = searchParams.get("sessionExpired") === "1";
     const [apiError, setApiError] = useState("");
+    const [unverifiedEmail, setUnverifiedEmail] = useState("");
+    const [resendState, setResendState] = useState("idle"); // idle | sending | sent
 
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm({
         resolver: zodResolver(loginSchema)
     });
 
     const onSubmit = async (data) => {
         setApiError("");
+        setUnverifiedEmail("");
+        setResendState("idle");
         dispatch(loginStart());
         try {
             const loginResponse = await login(data);
@@ -44,6 +48,26 @@ const Login = () => {
             const message = error.response?.data?.message || "Invalid email or password";
             dispatch(loginFailure(message));
             setApiError(message);
+
+            if (error.response?.data?.emailNotVerified) {
+                setUnverifiedEmail(data.email);
+            }
+        }
+    };
+
+    const handleResend = async () => {
+        if (!unverifiedEmail) return;
+        setResendState("sending");
+        try {
+            await resendVerification(unverifiedEmail);
+            setResendState("sent");
+        } catch (error) {
+            // resendVerification always returns a generic success response
+            // by design (see backend) to avoid account enumeration — a
+            // thrown error here means something else went wrong (network,
+            // rate limit), not "email doesn't exist".
+            setResendState("idle");
+            setApiError("Couldn't resend the verification email. Please try again shortly.");
         }
     };
 
@@ -103,9 +127,29 @@ const Login = () => {
                             <p className="text-sm text-red-400">
                                 {apiError}
                             </p>
+
+                            {unverifiedEmail && (
+                                <div className="mt-2">
+                                    {resendState === "sent" ? (
+                                        <p className="text-sm text-teal-400">
+                                            Verification email sent — check your inbox.
+                                        </p>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={handleResend}
+                                            disabled={resendState === "sending"}
+                                            className="text-sm font-semibold text-teal-400 hover:text-teal-300 transition disabled:opacity-60"
+                                        >
+                                            {resendState === "sending"
+                                                ? "Sending..."
+                                                : "Resend verification email"}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
-
                     <div className="flex justify-end">
                         <button
                             type="button"
@@ -115,8 +159,8 @@ const Login = () => {
                             Forgot Password?
                         </button>
                     </div>
-                    <Button>
-                        Sign In
+                    <Button disabled={isSubmitting}>
+                        {isSubmitting ? "Signing in..." : "Sign In"}
                     </Button>
                 </form>
                 <p className="text-center text-sm text-slate-400">

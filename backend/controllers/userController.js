@@ -88,6 +88,18 @@ const loginUser=async (req,res)=>{
                 success: false
             })
         }
+        // Checked AFTER password validation, not before — confirming the
+        // password first means this response can't be used to test whether
+        // an email is registered-but-unverified without already knowing
+        // its password (same account-enumeration reasoning as elsewhere
+        // in this file, e.g. forgotPassword's generic response).
+        if (!user.isEmailVerified) {
+            return res.status(403).json({
+                message: "Please verify your email before logging in.",
+                success: false,
+                emailNotVerified: true
+            })
+        }
 
         //ek access token bnalo
         const accessToken = signAccessToken(user._id);
