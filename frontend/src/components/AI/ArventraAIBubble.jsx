@@ -12,7 +12,7 @@ const ArventraAIBubble = () => {
     const [expanded, setExpanded] = useState(false);
     const [message, setMessage] = useState("");
 
-    const { messages, sending, error } = useSelector((state) => state.ai);
+    const { messages, sending, error, conversationId } = useSelector((state) => state.ai);
 
     const latestAssistantMessage = [...messages]
         .reverse()
@@ -27,7 +27,7 @@ const ArventraAIBubble = () => {
             return;
         }
 
-        dispatch(sendAIMessage(trimmedMessage));
+        dispatch(sendAIMessage({ message: trimmedMessage, conversationId }));
         setMessage("");
     };
 
