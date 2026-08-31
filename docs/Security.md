@@ -10,7 +10,7 @@ Arventra handles personal financial data, so security is treated as a first-clas
 ## Authentication & Session Security
 
 - **Password hashing** — bcrypt, 10 salt rounds. Plain-text passwords are never stored.
-- **Dual-token model** — short-lived access token (client-held) + httpOnly, `SameSite`-restricted refresh token cookie (invisible to JS). See [AUTH.md](./AUTH.md).
+- **Dual-token model** — short-lived access token (client-held) + httpOnly, `SameSite`-restricted refresh token cook
 - **Email verification** and **forgot-password flow** implemented, so account recovery doesn't rely on insecure ad hoc workarounds.
 
 ## CSRF Protection
