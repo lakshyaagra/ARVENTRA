@@ -13,6 +13,14 @@ const validateUpdateGoal= (req,res,next)=>{
             });
         }
     }
+    if(goalName !== undefined) {
+        if(typeof goalName !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Goal name must be text."
+            });
+        }
+    }
     if(targetAmount !== undefined) {
         const parsedTargetAmount = Number(targetAmount);
         if(Number.isNaN(parsedTargetAmount) || parsedTargetAmount <= 0){
@@ -43,12 +51,12 @@ const validateUpdateGoal= (req,res,next)=>{
             message:'Invalid Category'
         })
     }
-    if(description!==undefined){
-        if(typeof description!=="string" || description.trim()===""){
+    if (description !== undefined && description !== null && description !== "") {
+        if (typeof description !== "string") {
             return res.status(400).json({
-                success:false,
-                message: "Description can't be empty."
-            })
+                success: false,
+                message: "Description must be Text"
+            });
         }
     }
     if(deadline!==undefined){

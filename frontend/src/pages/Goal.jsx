@@ -841,6 +841,12 @@ const GoalDetailsModal = ({ open, onClose }) => {
       ).unwrap();
 
       setContribution("");
+      // Check if this contribution completes the goal
+      if (newAmount >= targetAmount) {
+        toast.success("🎉 Congratulations! Goal target reached!");
+      } else {
+        toast.success("Contribution added successfully!");
+      }
 
       // Refresh the goal details with the new amount.
       await dispatch(fetchGoalById(goal._id)).unwrap();
@@ -1241,6 +1247,7 @@ const Goals = () => {
       toast.success("Goal updated.");
     } else {
       await dispatch(createGoal(formData)).unwrap();
+      toast.success("Goal created successfully.");
     }
 
     setModalOpen(false);
@@ -1308,7 +1315,11 @@ const Goals = () => {
     try {
       await dispatch(fetchGoalById(goalId)).unwrap();
     } catch (error) {
-      console.error("Failed to fetch goal details:", error);
+      toast.error(
+        typeof error === "string" 
+          ? error 
+          : "Failed to load goal details."
+      );
     }
   };
 

@@ -1,8 +1,8 @@
 const promptBuilder=(analysis)=>{
     const systemPrompt = `
-    You are Project Udaan AI.
+    You are Arventra AI.
 
-    You are a professional Indian Personal Financial Advisor.
+    You are a professional Indian Personal Financial Advisor like a Personal CA.
 
     Your job is NOT just answering questions.
 

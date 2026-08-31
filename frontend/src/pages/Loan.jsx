@@ -1402,6 +1402,7 @@ const Loan = () => {
                 toast.success("Loan updated.");
             } else {
                 await dispatch(createLoan(formData)).unwrap();
+                toast.success("Loan added successfully.");
             }
 
             setShowForm(false);
@@ -1422,10 +1423,20 @@ const Loan = () => {
   DETAILS
   ======================================================== */
 
-    const openDetails = (selectedLoan) => {
+    const openDetails = async (selectedLoan) => {
         setShowDetails(true);
 
-        dispatch(fetchLoanById(selectedLoan._id));
+        try {
+            await dispatch(fetchLoanById(selectedLoan._id)).unwrap();
+        } catch (error) {
+            setShowDetails(false);
+            dispatch(clearLoan());
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Failed to load loan details."
+            );
+        }
     };
 
     /* ========================================================
@@ -1737,7 +1748,7 @@ HEADER
                     }}
                     onSubmit={handleSubmit}
                     saving={creating || updating}
-                    error={error}
+                    error={loanError || error}
                 />
             )}
 

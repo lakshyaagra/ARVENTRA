@@ -19,7 +19,6 @@ import {
     FileText,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
     fetchIncomes,
     fetchIncomeById,
@@ -31,7 +30,6 @@ import {
 /* ============================================================
 CONSTANTS
 ============================================================ */
-
 const categories = [
     "salary",
     "business",
@@ -44,7 +42,6 @@ const categories = [
     "refund",
     "other",
 ];
-
 const paymentMethods = [
     "cash",
     "upi",
@@ -58,34 +55,26 @@ const paymentMethods = [
 /* ============================================================
 HELPERS
 ============================================================ */
-
-const currency = (value = 0) =>
-    `₹${Number(value || 0).toLocaleString("en-IN")}`;
-
+const currency = (value = 0) =>`₹${Number(value || 0).toLocaleString("en-IN")}`;
 const formatDate = (date) => {
     if (!date) {
         return "—";
     }
-
     return new Date(date).toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
         year: "numeric",
     });
 };
-
 const formatDateInput = (date) => {
     if (!date) {
         return "";
     }
-
     return new Date(date).toISOString().split("T")[0];
 };
-
 /* ============================================================
 INITIAL FORM
 ============================================================ */
-
 const emptyForm = {
     incomeSource: "",
     amount: "",
@@ -96,11 +85,9 @@ const emptyForm = {
         .split("T")[0],
     notes: "",
 };
-
 /* ============================================================
 MODAL
 ============================================================ */
-
 const Modal = ({ children, onClose, maxWidth = "max-w-2xl" }) => {
     return (<div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
@@ -115,11 +102,9 @@ const Modal = ({ children, onClose, maxWidth = "max-w-2xl" }) => {
             {children} </div> </div>
     );
 };
-
 /* ============================================================
 FORM MODAL
 ============================================================ */
-
 const IncomeFormModal = ({
     editingIncome,
     formData,
@@ -129,7 +114,6 @@ const IncomeFormModal = ({
     saving,
     error,
 }) => {
-
     const handleChange = (event) => {
         const { name, value } = event.target;
 
@@ -138,36 +122,27 @@ const IncomeFormModal = ({
             [name]: value,
         }));
     };
-
-
     return (
         <Modal onClose={onClose}>
-
             {/* HEADER */}
-
             <div className="flex items-start justify-between">
-
                 <div>
                     <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                         {editingIncome
                             ? "Edit income"
                             : "New income"}
                     </p>
-
                     <h2 className="mt-2 text-xl font-medium text-slate-100">
                         {editingIncome
                             ? "Edit income record"
                             : "Add income"}
                     </h2>
-
                     <p className="mt-2 text-sm text-slate-500">
                         {editingIncome
                             ? "Update the details of this income record."
                             : "Record a new source of income."}
                     </p>
                 </div>
-
-
                 <button
                     type="button"
                     onClick={onClose}
@@ -178,24 +153,17 @@ const IncomeFormModal = ({
                         aria-hidden="true"
                     />
                 </button>
-
             </div>
-
-
             {/* FORM */}
-
             <form
                 onSubmit={onSubmit}
                 className="mt-7 grid gap-5 sm:grid-cols-2"
             >
-
                 {/* INCOME SOURCE */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Income source
                     </label>
-
                     <input
                         type="text"
                         name="incomeSource"
@@ -207,14 +175,11 @@ const IncomeFormModal = ({
                     />
                 </div>
 
-
                 {/* AMOUNT */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Amount
                     </label>
-
                     <input
                         type="number"
                         name="amount"
@@ -228,14 +193,11 @@ const IncomeFormModal = ({
                     />
                 </div>
 
-
                 {/* CATEGORY */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Category
                     </label>
-
                     <select
                         name="category"
                         value={formData.category}
@@ -253,14 +215,11 @@ const IncomeFormModal = ({
                     </select>
                 </div>
 
-
                 {/* PAYMENT METHOD */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Payment method
                     </label>
-
                     <select
                         name="paymentMethod"
                         value={formData.paymentMethod}
@@ -278,14 +237,11 @@ const IncomeFormModal = ({
                     </select>
                 </div>
 
-
                 {/* RECEIVED DATE */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Received date
                     </label>
-
                     <input
                         type="date"
                         name="receivedDate"
@@ -300,14 +256,11 @@ const IncomeFormModal = ({
                     />
                 </div>
 
-
                 {/* NOTES */}
-
                 <div>
                     <label className="text-sm text-slate-400">
                         Notes
                     </label>
-
                     <input
                         type="text"
                         name="notes"
@@ -318,9 +271,7 @@ const IncomeFormModal = ({
                     />
                 </div>
 
-
                 {/* ERROR */}
-
                 {error && (
                     <div className="sm:col-span-2 rounded-lg border border-red-900/40 bg-red-950/20 px-4 py-3">
                         <p className="text-sm text-red-400">
@@ -329,11 +280,8 @@ const IncomeFormModal = ({
                     </div>
                 )}
 
-
                 {/* ACTIONS */}
-
                 <div className="flex justify-end gap-3 pt-2 sm:col-span-2">
-
                     <button
                         type="button"
                         onClick={onClose}
@@ -341,8 +289,6 @@ const IncomeFormModal = ({
                     >
                         Cancel
                     </button>
-
-
                     <button
                         type="submit"
                         disabled={saving}
@@ -354,11 +300,8 @@ const IncomeFormModal = ({
                                 ? "Update income"
                                 : "Save income"}
                     </button>
-
                 </div>
-
             </form>
-
         </Modal>
     );
 };
@@ -366,35 +309,27 @@ const IncomeFormModal = ({
 /* ============================================================
 DETAILS MODAL
 ============================================================ */
-
 const IncomeDetailsModal = ({
     income,
     loading,
     onClose,
     onEdit,
 }) => {
-
     return (
         <Modal
             onClose={onClose}
             maxWidth="max-w-xl"
         >
-
             {/* HEADER */}
-
             <div className="flex items-start justify-between">
-
                 <div>
                     <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                         Income details
                     </p>
-
                     <h2 className="mt-2 text-xl font-medium text-slate-100">
                         {income?.incomeSource || "Income"}
                     </h2>
                 </div>
-
-
                 <button
                     type="button"
                     onClick={onClose}
@@ -405,9 +340,7 @@ const IncomeDetailsModal = ({
                         aria-hidden="true"
                     />
                 </button>
-
             </div>
-
 
             {loading ? (
                 <div className="flex items-center justify-center py-16">
@@ -416,55 +349,41 @@ const IncomeDetailsModal = ({
                     </p>
                 </div>
             ) : income ? (
-
                 <div className="mt-7 space-y-4">
-
                     {/* AMOUNT */}
-
                     <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5">
-
                         <div className="flex items-center gap-3">
-
                             <div className="rounded-lg bg-teal-500/10 p-2">
                                 <Wallet
                                     className="h-5 w-5 text-teal-400"
                                     aria-hidden="true"
                                 />
                             </div>
-
                             <div>
                                 <p className="text-xs text-slate-500">
                                     Amount
                                 </p>
-
                                 <p className="mt-1 text-2xl font-semibold text-teal-400">
                                     {currency(income.amount)}
                                 </p>
                             </div>
-
                         </div>
-
                     </div>
 
-
                     {/* DETAILS */}
-
                     <div className="grid gap-4 sm:grid-cols-2">
-
                         <DetailItem
                             icon={Tag}
                             label="Category"
                             value={income.category}
                             capitalize
                         />
-
                         <DetailItem
                             icon={CreditCard}
                             label="Payment method"
                             value={income.paymentMethod}
                             capitalize
                         />
-
                         <DetailItem
                             icon={CalendarDays}
                             label="Received date"
@@ -472,7 +391,6 @@ const IncomeDetailsModal = ({
                                 income.receivedDate
                             )}
                         />
-
                         <DetailItem
                             icon={CalendarDays}
                             label="Created"
@@ -480,14 +398,10 @@ const IncomeDetailsModal = ({
                                 income.createdAt
                             )}
                         />
-
                     </div>
 
-
                     {/* NOTES */}
-
                     <div className="rounded-xl border border-[#293533] bg-[#1B2422] p-5">
-
                         <div className="flex items-center gap-2">
                             <FileText
                                 className="h-4 w-4 text-slate-500"
@@ -498,16 +412,13 @@ const IncomeDetailsModal = ({
                                 Notes
                             </p>
                         </div>
-
                         <p className="mt-3 text-sm leading-6 text-slate-300">
                             {income.notes || "No notes added."}
                         </p>
-
                     </div>
 
 
                     {/* ACTIONS */}
-
                     <div className="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
@@ -579,30 +490,24 @@ const DeleteModal = ({
     onConfirm,
     deleting,
 }) => {
-
     if (!income) {
         return null;
     }
-
     return (
         <Modal
             onClose={onClose}
             maxWidth="max-w-md"
         >
-
             <div className="text-center">
-
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
                     <Trash2
                         className="h-5 w-5 text-red-400"
                         aria-hidden="true"
                     />
                 </div>
-
                 <h2 className="mt-5 text-lg font-medium text-slate-100">
                     Delete income?
                 </h2>
-
                 <p className="mt-3 text-sm leading-6 text-slate-500">
                     Are you sure you want to delete{" "}
                     <span className="text-slate-300">
@@ -610,10 +515,7 @@ const DeleteModal = ({
                     </span>
                     ? This action cannot be undone.
                 </p>
-
-
                 <div className="mt-7 flex justify-center gap-3">
-
                     <button
                         type="button"
                         onClick={onClose}
@@ -621,8 +523,6 @@ const DeleteModal = ({
                     >
                         Cancel
                     </button>
-
-
                     <button
                         type="button"
                         onClick={onConfirm}
@@ -633,11 +533,8 @@ const DeleteModal = ({
                             ? "Deleting..."
                             : "Delete"}
                     </button>
-
                 </div>
-
             </div>
-
         </Modal>
     );
 };
@@ -645,7 +542,6 @@ const DeleteModal = ({
 /* ============================================================
 PAGE
 ============================================================ */
-
 const Income = () => {
     const dispatch = useDispatch();
     const navigate=useNavigate();
@@ -670,32 +566,22 @@ const Income = () => {
     /* ========================================================
        LOCAL STATE
        ======================================================== */
-
     const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("");
-
     const [sort, setSort] = useState("createdAt");
-
     const [order, setOrder] = useState("desc");
-
     const [showForm, setShowForm] = useState(false);
-
     const [editingIncome, setEditingIncome] = useState(null);
-
     const [formData, setFormData] = useState(emptyForm);
-
     const [showDetails, setShowDetails] = useState(false);
-
     const [selectedIncome, setSelectedIncome] = useState(null);
-
     const [deleteTarget, setDeleteTarget] = useState(null);
 
 
     /* ========================================================
        FETCH INCOMES
        ======================================================== */
-
     const loadIncomes = ({
         page = 1,
         nextSearch = search,
@@ -716,11 +602,9 @@ const Income = () => {
         );
     };
 
-
     /* ========================================================
        INITIAL FETCH
        ======================================================== */
-
     useEffect(() => {
         loadIncomes({
             page: 1,
@@ -732,11 +616,9 @@ const Income = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-
     /* ========================================================
        SEARCH
        ======================================================== */
-
     const handleSearch = (event) => {
         event.preventDefault();
         const trimmedSearch =
@@ -751,7 +633,6 @@ const Income = () => {
     /* ========================================================
        CATEGORY
        ======================================================== */
-
     const handleCategoryChange = (event) => {
         const value = event.target.value;
         setCategory(value);
@@ -761,11 +642,9 @@ const Income = () => {
         });
     };
 
-
     /* ========================================================
        SORT
        ======================================================== */
-
     const handleSortChange = (event) => {
         const value = event.target.value;
         setSort(value);
@@ -775,11 +654,9 @@ const Income = () => {
         });
     };
 
-
     /* ========================================================
        ORDER
        ======================================================== */
-
     const handleOrderChange = (event) => {
         const value = event.target.value;
         setOrder(value);
@@ -789,19 +666,15 @@ const Income = () => {
         });
     };
 
-
     /* ========================================================
        RESET FILTERS
        ======================================================== */
-
     const resetFilters = () => {
-
         setSearchInput("");
         setSearch("");
         setCategory("");
         setSort("createdAt");
         setOrder("desc");
-
         loadIncomes({
             page: 1,
             nextSearch: "",
@@ -811,11 +684,9 @@ const Income = () => {
         });
     };
 
-
     /* ========================================================
        OPEN ADD MODAL
        ======================================================== */
-
     const openAddModal = () => {
 
         setEditingIncome(null);
@@ -823,11 +694,9 @@ const Income = () => {
         setShowForm(true);
     };
 
-
     /* ========================================================
        OPEN EDIT MODAL
        ======================================================== */
-
     const openEditModal = (item) => {
         setSelectedIncome(null);
         setShowDetails(false);
@@ -856,104 +725,67 @@ const Income = () => {
         setShowForm(true);
     };
 
-
     /* ========================================================
        CLOSE FORM
        ======================================================== */
-
     const closeForm = () => {
-
         if (creating || updating) {
             return;
         }
-
         setShowForm(false);
         setEditingIncome(null);
         setFormData(emptyForm);
     };
 
-
     /* ========================================================
        SUBMIT FORM
        ======================================================== */
-
     const handleSubmit = async (event) => {
-
         event.preventDefault();
 
         const payload = {
-            incomeSource:
-                formData.incomeSource.trim(),
-
-            amount:
-                Number(formData.amount),
-
-            category:
-                formData.category,
-
-            paymentMethod:
-                formData.paymentMethod,
-
-            receivedDate:
-                formData.receivedDate,
-
-            notes:
-                formData.notes.trim(),
+            incomeSource: formData.incomeSource.trim(),
+            amount: Number(formData.amount),
+            category: formData.category,
+            paymentMethod: formData.paymentMethod,
+            receivedDate: formData.receivedDate,
+            notes: formData.notes.trim(),
         };
-
-
         try {
-
             if (editingIncome) {
-
                 await dispatch(
                     updateIncome({
                         id: editingIncome._id,
                         incomeData: payload,
                     })
                 ).unwrap();
-
                 toast.success("Income entry updated.");
-
+                closeForm();
+                loadIncomes({
+                    page: pagination.currPage || 1,
+                });
             } else {
-
-                await dispatch(
-                    createIncome(payload)
-                ).unwrap();
-
+                await dispatch(createIncome(payload)).unwrap();
+                toast.success("Income entry created successfully.");
+                closeForm();
+                loadIncomes({ page: 1 });
             }
-
-
-            closeForm();
-
-            loadIncomes({
-                page:
-                    pagination.currPage || 1,
-            });
-
         } catch (error) {
-
             toast.error(
                 typeof error === "string"
                     ? error
-                    : "Something went wrong. Please try again."
+                    : `Failed to ${editingIncome ? "update" : "create"} income entry.`
             );
-
         }
     };
-
 
     /* ========================================================
        VIEW DETAILS
        ======================================================== */
-
     const openDetails = async (item) => {
-
         setShowDetails(true);
         setSelectedIncome(null);
-
         try {
-
             const result =
                 await dispatch(
                     fetchIncomeById(
@@ -964,21 +796,21 @@ const Income = () => {
             setSelectedIncome(
                 result.income
             );
-
         } catch (error) {
-
             setSelectedIncome(null);
-
+            setShowDetails(false);
+            toast.error(
+                typeof error === "string"
+                    ? error
+                    : "Failed to load income details."
+            );
         }
     };
-
 
     /* ========================================================
        CLOSE DETAILS
        ======================================================== */
-
     const closeDetails = () => {
-
         setShowDetails(false);
         setSelectedIncome(null);
     };
@@ -987,25 +819,18 @@ const Income = () => {
     /* ========================================================
        DELETE
        ======================================================== */
-
     const confirmDelete = async () => {
-
         if (!deleteTarget) {
             return;
         }
-
         try {
-
             await dispatch(
                 deleteIncome(
                     deleteTarget._id
                 )
             ).unwrap();
-
             setDeleteTarget(null);
-
             toast.success("Income entry deleted.");
-
             const currentPage =
                 pagination.currPage || 1;
 
@@ -1020,56 +845,44 @@ const Income = () => {
             });
 
         } catch (error) {
-
             toast.error(
                 typeof error === "string"
                     ? error
                     : "Failed to delete income entry. Please try again."
             );
-
         }
     };
-
 
     /* ========================================================
        PAGINATION
        ======================================================== */
-
     const goToPreviousPage = () => {
-
         if (!pagination.hasPreviousPage) {
             return;
         }
-
         loadIncomes({
             page:
                 pagination.currPage - 1,
         });
     };
 
-
     const goToNextPage = () => {
-
         if (!pagination.hasNextPage) {
             return;
         }
-
         loadIncomes({
             page:
                 pagination.currPage + 1,
         });
     };
 
-
     /* ========================================================
        LOADING
        ======================================================== */
-
     if (
         loading &&
         incomes.length === 0
     ) {
-
         return (
             <div className="flex min-h-[50vh] items-center justify-center">
 
@@ -1081,22 +894,16 @@ const Income = () => {
         );
     }
 
-
     /* ========================================================
        PAGE
        ======================================================== */
-
     return (
         <>
-
             {/* =================================================
             HEADER
             ================================================= */}
-
             <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-
                 <div>
-
                     <button
                         type="button"
                         onClick={() => navigate("/dashboard")}
@@ -1119,8 +926,6 @@ const Income = () => {
                     </p>
 
                 </div>
-
-
                 <button
                     type="button"
                     onClick={openAddModal}
@@ -1133,14 +938,11 @@ const Income = () => {
 
                     Add income
                 </button>
-
             </div>
-
 
             {/* =================================================
             ERROR
             ================================================= */}
-
             {(error || incomeError) && (
                 <div className="mb-6 rounded-xl border border-red-900/40 bg-red-950/20 px-5 py-4">
 
@@ -1151,7 +953,6 @@ const Income = () => {
 
                 </div>
             )}
-
 
             {/* =================================================
             FILTERS
@@ -1466,7 +1267,6 @@ const Income = () => {
                         <span className="text-slate-300">
                             {pagination.totalPages}
                         </span>
-
                     </p>
                     <button
                         type="button"
@@ -1493,44 +1293,25 @@ const Income = () => {
 
             {showForm && (
                 <IncomeFormModal
-                    editingIncome={
-                        editingIncome
-                    }
+                    editingIncome={editingIncome}
                     formData={formData}
-                    setFormData={
-                        setFormData
-                    }
+                    setFormData={setFormData}
                     onClose={closeForm}
-                    onSubmit={
-                        handleSubmit
-                    }
-                    saving={
-                        creating ||
-                        updating
-                    }
-                    error={error}
+                    onSubmit={handleSubmit}
+                    saving={creating || updating}
+                    error={incomeError || error}
                 />
             )}
-
 
             {/* =================================================
             VIEW DETAILS MODAL
             ================================================= */}
-
             {showDetails && (
                 <IncomeDetailsModal
-                    income={
-                        selectedIncome
-                    }
-                    loading={
-                        incomeLoading
-                    }
-                    onClose={
-                        closeDetails
-                    }
-                    onEdit={
-                        openEditModal
-                    }
+                    income={selectedIncome}
+                    loading={incomeLoading}
+                    onClose={closeDetails}
+                    onEdit={openEditModal}
                 />
             )}
 
@@ -1540,20 +1321,14 @@ const Income = () => {
 
             {deleteTarget && (
                 <DeleteModal
-                    income={
-                        deleteTarget
-                    }
+                    income={deleteTarget}
                     onClose={() =>
                         setDeleteTarget(
                             null
                         )
                     }
-                    onConfirm={
-                        confirmDelete
-                    }
-                    deleting={
-                        deleting
-                    }
+                    onConfirm={confirmDelete}
+                    deleting={deleting}
                 />
             )}
         </>

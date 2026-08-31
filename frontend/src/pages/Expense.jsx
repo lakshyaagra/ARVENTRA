@@ -616,6 +616,11 @@ const Expense = () => {
 
     const trimmedSearch = searchInput.trim();
 
+    if (!trimmedSearch && searchInput !== "") {
+      toast.error("Please enter a valid search term.");
+      return;
+    }
+
     setSearch(trimmedSearch);
 
     loadExpenses({
@@ -772,6 +777,7 @@ const Expense = () => {
         toast.success("Expense entry updated.");
       } else {
         await dispatch(createExpense(payload)).unwrap();
+        toast.success("Expense Created Successfully.");
       }
 
       closeForm();

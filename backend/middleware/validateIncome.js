@@ -43,10 +43,10 @@ const validateIncome=(req,res,next)=>{
             });
         }
     }
-    if(req.body.notes!==undefined && req.body.notes.trim()===""){
+    if(req.body.notes!==undefined && typeof req.body.notes!=="string"){
         return res.status(400).json({
             success:false,
-            message: "Notes can't be empty."
+            message: "Notes must be text."
         })
     }
 

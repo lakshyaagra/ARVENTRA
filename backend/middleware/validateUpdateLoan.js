@@ -92,12 +92,12 @@ const validateUpdateLoan=(req,res,next)=>{
             });
         }
     }
-    if(notes!==undefined && notes !== null && notes !== ""){
-        if(typeof notes!=="string" || notes.trim()===""){
+    if (notes !== undefined && notes !== null) {
+        if (typeof notes !== "string") {
             return res.status(400).json({
-                success:false,
-                message: "Notes can't be empty."
-            })
+                success: false,
+                message: "Notes must be text."
+            });
         }
     }
     next();

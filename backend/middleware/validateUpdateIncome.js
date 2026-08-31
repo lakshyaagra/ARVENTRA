@@ -34,10 +34,10 @@ const validateUpdateIncome=(req,res,next)=>{
         })
     }
     if(notes!==undefined){
-        if(typeof notes!=="string" || notes.trim()===""){
+        if(typeof notes!=="string"){
             return res.status(400).json({
                 success:false,
-                message: "Notes can't be empty."
+                message: "Notes must be text."
             })
         }
     }

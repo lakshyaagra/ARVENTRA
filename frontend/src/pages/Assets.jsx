@@ -1256,6 +1256,7 @@ const Assets = () => {
         toast.success("Asset updated.");
       } else {
         await dispatch(createAsset(formData)).unwrap();
+        toast.success("Asset created successfully.");
       }
 
       setShowForm(false);
@@ -1276,10 +1277,19 @@ const Assets = () => {
        DETAILS
     ======================================================== */
 
-  const openDetails = (selectedAsset) => {
+  const openDetails = async (selectedAsset) => {
     setShowDetails(true);
 
-    dispatch(fetchAssetById(selectedAsset._id));
+    try {
+      await dispatch(fetchAssetById(selectedAsset._id)).unwrap();
+    } catch (error) {
+      setShowDetails(false);
+      toast.error(
+        typeof error === "string" 
+          ? error 
+          : "Failed to load asset details."
+      );
+    }
   };
 
   /* ========================================================
