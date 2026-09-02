@@ -10,7 +10,7 @@ Arventra handles personal financial data, so security is treated as a first-clas
 ## Authentication & Session Security
 
 - **Password hashing** — bcrypt, 10 salt rounds. Plain-text passwords are never stored.
-- **Dual-token model** — short-lived access token (client-held) + httpOnly, `SameSite`-restricted refresh token cookie (invisible to JS). See [AUTH.md](./AUTH.md).
+- **Dual-token model** — short-lived access token (client-held) + httpOnly, `SameSite`-restricted refresh token cook
 - **Email verification** and **forgot-password flow** implemented, so account recovery doesn't rely on insecure ad hoc workarounds.
 
 ## CSRF Protection
@@ -28,7 +28,7 @@ Applied at the API level (login and other sensitive endpoints in particular) to 
 
 ## Authorization (data isolation between users)
 
-The server never trusts a client-supplied `user` field on any write. After the auth middleware attaches `req.user`, every module sets ownership server-side (`req.body.user = req.user.id`) and scopes every read/update/delete query to the authenticated user. A user cannot access another user's goals, loans, income, expenses, assets, notifications, settings, or contact requests by guessing a document ID — see [AUTH.md](./AUTH.md#authorization-ownership-not-just-identity).
+The server never trusts a client-supplied `user` field on any write. After the auth middleware attaches `req.user`, every module sets ownership server-side (`req.body.user = req.user.id`) and scopes every read/update/delete query to the authenticated user. A user cannot access another user's goals, loans, income, expenses, assets, notifications, settings, or contact requests by guessing a document ID.
 
 ## File Uploads
 
@@ -37,7 +37,3 @@ Images (e.g. goal images) are uploaded via Multer to Cloudinary rather than stor
 ## Secrets Management
 
 All secrets (`JWT_SECRET`, database URI, Cloudinary credentials, Gemini API key) are read from environment variables via `.env`, never hardcoded in source.
-
-## What Hasn't Been Formally Verified Yet
-
-This document describes what's implemented. The current testing pass (see [TESTING.md](./TESTING.md)) is specifically exercising these controls — expired/tampered tokens, missing/invalid CSRF tokens, rate-limit triggering, XSS payloads in form fields, and cross-user data access attempts — to confirm they behave as designed before deployment.
