@@ -47,6 +47,7 @@ const createGoal = async (req, res) => {
     finally {
         if (req.file) {
             try {
+                // Ye temporary local file delete karta hai.
                 await fs.unlink(req.file.path);
                 console.log("Temporary file deleted.");
             } catch (err) {
@@ -82,6 +83,7 @@ const getGoals = async (req, res) => {
         const filter={
             user:req.user.id,
         }
+        
         if(req.query.status){
             filter.status=req.query.status
         }
