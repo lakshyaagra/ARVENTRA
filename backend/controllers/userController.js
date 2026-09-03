@@ -39,7 +39,7 @@ const registerUser=async (req,res)=>{
         res.status(201).json({
             message: "User Registered",
             success: true,
-            user: user
+            user: userResponse
         })
     }
     catch(err){
@@ -101,7 +101,7 @@ const loginUser=async (req,res)=>{
             })
         }
 
-        //ek access token bnalo
+        //ek access token bnalo :- normal jwt token h
         const accessToken = signAccessToken(user._id);
  
         const { rawToken, hashedToken } = generateRefreshToken();
@@ -270,7 +270,9 @@ const verifyEmail = async (req, res) => {
 // FOR :- "Verification link not recieved, send again"
 const resendVerification = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ 
+            email: req.body.email 
+        });
         const genericResponse = {
             success: true,
             message: "If an account with that email exists and isn't verified yet, a new verification link has been sent."
@@ -295,7 +297,9 @@ const resendVerification = async (req, res) => {
 };
 const forgotPassword = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ 
+            email: req.body.email 
+        });
 
         // Same response whether or not the account exists — otherwise this
         // endpoint becomes an account-enumeration oracle.
